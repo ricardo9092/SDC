@@ -140,6 +140,7 @@ public class BankTester {
     }
 
     private synchronized boolean isRunning() {
+        System.out.println(stage.compareTo(Stage.Run) <= 0);
         return stage.compareTo(Stage.Run) <= 0;
     }
 

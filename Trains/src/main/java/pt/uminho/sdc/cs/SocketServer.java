@@ -76,8 +76,10 @@ public class SocketServer<T> {
             while (true) {
                 
             	Reply rep = null;
-            	try {
+                SpreadGroup g = null;
+                try {
 					receivedMessage = connection.receive();
+					g = receivedMessage.getSender();
 					Request<T, ?> req = (Request<T,?>) receivedMessage.getObject();
 					System.out.println("Request Received = " + receivedMessage.getObject());
                     //Reply rep = null;
@@ -102,10 +104,10 @@ public class SocketServer<T> {
                 
                 try {
 					sendMessage.setObject(rep);
-	                //sendMessage.addGroup("groupServer");
+	                sendMessage.addGroup(g);
 	                sendMessage.setReliable();
 					connection.multicast(sendMessage);
-                    System.out.println("Trying to send the message to the CLient = " + sendMessage.getObject());
+                    System.out.println("Trying to send the message to the Client = " + sendMessage.getObject());
 
 				} catch (SpreadException e) {
 					// TODO Auto-generated catch block

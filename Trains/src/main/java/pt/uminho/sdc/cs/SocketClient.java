@@ -4,122 +4,93 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import spread.*;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
 import java.io.InterruptedIOException;
-import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Stack;
 
 public class SocketClient<T> implements Client<T> {
     private static Logger logger = LoggerFactory.getLogger(SocketClient.class);
 
-    /*private final Socket socket;
-    private final Socket socketServer2;
-    private final ObjectOutputStream oos;
-    private final ObjectOutputStream oos2;
-    private final ObjectInputStream ois;
-    private final ObjectInputStream ois2;*/
+    private SpreadMessage sendMessage;
     private Reply rep;
+    private int port;
     
     private SpreadConnection connection = new SpreadConnection();
-    
-    private SpreadGroup group;
-    
-    private SpreadMessage sendMessage;
+    private SpreadGroup group = new SpreadGroup();
     
     private String clientName;
 
-   /* public SocketClient(String server, int port, int port2) throws IOException {
-        
-        logger.debug("client connecting to server 1: {}:{}", server, port);
-        this.socket = new Socket(server, port);
-        logger.debug("client connecting to server 2: {}:{}", server, port2);
-        this.socketServer2 = new Socket(server, port2);
-        oos = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-        oos.flush();
-        ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
-        logger.info("client connected to server 1: {}", socket);
-        oos2 = new ObjectOutputStream(new BufferedOutputStream(socketServer2.getOutputStream()));
-        oos2.flush();
-        ois2 = new ObjectInputStream(new BufferedInputStream(socketServer2.getInputStream()));
-        logger.info("client connected to server 2: {}", socketServer2);
-        
-        
-    } */
     ArrayList<SpreadMessage> theMessageList = new ArrayList<SpreadMessage>();
     
     public SocketClient(String server, int port, String clientName) throws IOException {
             	
     	this.clientName = clientName;
-    	
+    	this.port=port;
+
         try {
 			connection.connect(InetAddress.getByName("localhost") , port, clientName, false, false);
+            group.join(connection,clientName);
 		} catch (SpreadException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        
-        /*
-        group = new SpreadGroup();
-        
-        try {
-			group.join(connection, "groupClient");
-		} catch (SpreadException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        */
-        sendMessage = new SpreadMessage();
+
         
     }
     
     
     public synchronized <V> V request(Request<T,V> req) throws RemoteInvocationException, SpreadException, InterruptedException {
-        
-        
-        sendMessage.setObject(req);
+
+
+        sendMessage = new SpreadMessage();
         sendMessage.addGroup("groupServer");
         sendMessage.setReliable();
-        
+        sendMessage.setObject(req);
+
+        try {
+            connection.connect(InetAddress.getByName("localhost") , port, clientName, false, false);
+            group.join(connection,clientName);
+        } catch (SpreadException e) {
+            // TODO Auto-generated catch block
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+
         connection.multicast(sendMessage);
-        
-        new Thread(){
-            private Reply r;
-            private SpreadMessage receivedMessage = new SpreadMessage();
+
+        logger.info("message multicast");
+
+        //new Thread(){
+             Reply r=null;
+             SpreadMessage receivedMessage = new SpreadMessage();
             
-            public void run(){
+            //public void run(){
+                logger.info("thread running");
                 try {
-					receivedMessage = connection.receive();
-					theMessageList.add(receivedMessage);
+                    receivedMessage = connection.receive();
+                    logger.info("message received");
+					//theMessageList.add(receivedMessage);
 				} catch (InterruptedIOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (SpreadException e) {
-					// TODO Auto-generated catch block
+                    logger.info("exception");
 					e.printStackTrace();
 				}
                 
                 try {
+                    //receivedMessage = theMessageList.get(0);
 					System.out.println("Client Received = " + receivedMessage.getObject());
-
 					r = (Reply) receivedMessage.getObject();
                     System.out.println("The reply is after = " + r);
 				} catch (SpreadException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
                                 
                 setReply(r);
-            }
-        }.start();
+            //}
+        //}.start();
         
         
             
@@ -129,6 +100,7 @@ public class SocketClient<T> implements Client<T> {
         
         
         if (rep instanceof ValueReply) {
+            System.out.println(((ValueReply) rep).getValue());
             return ((ValueReply<V>) rep).getValue();
         } else {
             throw ((ErrorReply)rep).getException();
@@ -136,12 +108,15 @@ public class SocketClient<T> implements Client<T> {
     }
 
     public synchronized void setReply(Reply r){
-        System.out.println("The reply is r =  " + r);
-        if (rep == null){
             rep = r;
-            System.out.println("The reply is " + rep);
             notifyAll();
-        }
+            try {
+                close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (SpreadException e) {
+                e.printStackTrace();
+            }
     }
 
     
