@@ -15,7 +15,6 @@ pt/uminho/sdc/bank/BankImpl.class
 pt/uminho/sdc/cs/RemoteInvocationException.class
 pt/uminho/sdc/bank/TestLocal.class
 pt/uminho/sdc/bank/BankTester$Stage.class
-pt/uminho/sdc/bank/BankTester$1.class
 pt/uminho/sdc/cs/ValueReply.class
 pt/uminho/sdc/cs/ServerSideException.class
 pt/uminho/sdc/cs/Client.class

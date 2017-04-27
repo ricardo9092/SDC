@@ -15,8 +15,28 @@ public class BankImpl implements Bank {
     Map<String, Integer> linha1 = new HashMap<String, Integer>();
     Map<String, Integer> linha2 = new HashMap<String, Integer>();
     Map<String, Integer> linha3 = new HashMap<String, Integer>();
-    
-    
+
+    public BankImpl(){
+        linha1.put("0",0);
+        linha1.put("1",0);
+        linha1.put("2",0);
+        linha1.put("3",0);
+        linha1.put("4",0);
+
+        linha2.put("0",0);
+        linha2.put("1",0);
+        linha2.put("2",0);
+        linha2.put("3",0);
+        linha2.put("4",0);
+        linha2.put("5",0);
+        linha2.put("6",0);
+        linha2.put("7",0);
+
+        linha3.put("0",0);
+        linha3.put("1",0);
+        linha3.put("2",0);
+        linha3.put("3",0);
+    }
     
     @Override
     public synchronized boolean requestEntry(int linha, int segmento){

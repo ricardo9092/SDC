@@ -55,15 +55,19 @@ public class BankTester {
         try {
             bank = supplier.get();
             logger.debug("connected to bank");
-
-            initial = bank.getBalance();
+            initial = 0 ;
+            //initial = bank.getBalance();
         } catch(Exception e) {
             logger.error("cannot get initial balance: test aborted", e);
             return;
         }
 
-        for(int i=0; i<worker.length; i++)
-            worker[i] = new Worker();
+        for(int i=0; i<worker.length; i++) {
+            int linha = generateRandomLinha(3, 1);
+            int entryPoint = generateRandomStartPoint(linha);
+            int leavePoint = generateRandomEndPoint(linha, entryPoint);
+            worker[i] = new Worker(linha, entryPoint, leavePoint);
+        }
         for(int i=0; i<worker.length; i++)
             worker[i].start();
 
@@ -145,17 +149,64 @@ public class BankTester {
     }
 
     private class Worker extends Thread {
+        private int linha;
+        private int entryPoint;
+        private int leavePoint;
+        private int currentPostion;
+        private boolean entered;
+
+        public Worker(int linha, int entryPoint, int leavePoint){
+            this.linha = linha;
+            this.entryPoint = entryPoint;
+            this.leavePoint = leavePoint;
+            this.currentPostion = this.entryPoint;
+            this.entered = false;
+        }
+
+        public void setLinha(int linha){
+            this.linha = linha;
+        }
+        public int getLinha(){
+            return linha;
+        }
+        public void setEntryPoint(int entryPoint){
+            this.entryPoint = entryPoint;
+        }
+        public int getEntryPoint() {
+            return entryPoint;
+        }
+        public void setLeavePoint(int leavePoint){
+            this.leavePoint = leavePoint;
+        }
+        public int getLeavePoint() {
+            return leavePoint;
+        }
+
         public void run() {
             try {
                 Bank bank = supplier.get();
 
                 logger.debug("worker connected to bank");
+                while (currentPostion < leavePoint){
+                    if (entered){
+                        bank.requestEntry(linha, currentPostion+1);
+                        bank.setOccupied(linha, currentPostion+1);
+                        bank.setAvailable(linha, currentPostion);
+                        currentPostion = currentPostion + 1;
+                    }else{
+                        bank.requestEntry(linha, entryPoint);
+                        entered = true;
+                    }
 
+
+                }
+                /*
                 while (isRunning()) {
                     int op = 0;
                     long before = System.nanoTime();
                     if (random.nextFloat() < .1) {
-                        bank.getBalance();
+                        int val = bank.getBalance();
+                        logger.info("Balance = " + val);
                     } else {
                         op = random.nextInt(100) - 60;
                         if (!bank.operation(op))
@@ -163,11 +214,51 @@ public class BankTester {
                     }
                     long after = System.nanoTime();
                     log(after - before, op);
-                }
+                }*/
             } catch(Exception e) {
                 logger.error("worker stopping on exception", e);
                 setStage(Stage.Error);
             }
         }
+    }
+
+
+    public int generateRandomLinha(int max, int min){
+        return random.nextInt(((max - min) + 1) + min);
+    }
+
+    public int generateRandomStartPoint(int linha){
+        int StartPoint = 0;
+        switch(linha){
+            case 1:
+                StartPoint = random.nextInt(((5 - 0) + 1) + 0);
+                break;
+            case 2:
+                StartPoint = random.nextInt(((7 - 0) + 1) + 0);
+                break;
+            case 3:
+                StartPoint = random.nextInt(((3 - 0) + 1) + 0);
+                break;
+        }
+        return StartPoint;
+    }
+
+    public int generateRandomEndPoint(int linha, int startPoint){
+        int EndPoint = 0;
+        switch(linha){
+            case 1:
+                while(EndPoint <= startPoint)
+                    EndPoint = random.nextInt(((5 - 0) + 1) + 0);
+                break;
+            case 2:
+                while(EndPoint <= startPoint)
+                    EndPoint = random.nextInt(((7 - 0) + 1) + 0);
+                break;
+            case 3:
+                while(EndPoint <= startPoint)
+                    EndPoint = random.nextInt(((3 - 0) + 1) + 0);
+                break;
+        }
+        return EndPoint;
     }
 }

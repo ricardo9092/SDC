@@ -58,6 +58,7 @@ public class SocketClient<T> implements Client<T> {
             e.printStackTrace();
         }
 
+        logger.info("The connection is = " + connection.isConnected());
         connection.multicast(sendMessage);
 
         logger.info("message multicast");
