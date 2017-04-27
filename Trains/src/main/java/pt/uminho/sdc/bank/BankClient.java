@@ -22,4 +22,19 @@ public class BankClient implements Bank {
     public int getBalance() throws RemoteInvocationException, SpreadException, InterruptedException {
         return client.request(new BankBalanceRequest());
     }
+    
+    @Override
+    public boolean requestEntry(int linha, int segmento)throws RemoteInvocationException, SpreadException, InterruptedException {
+        return client.request(new BankEntryRequest(linha, segmento));
+    }
+    
+    @Override
+    public boolean setAvailable(int linha, int segmento)throws RemoteInvocationException, SpreadException, InterruptedException {
+        return client.request(new BankSetAvailable(linha, segmento));
+    }
+
+    @Override
+    public boolean setOccupied(int linha, int segmento)throws RemoteInvocationException, SpreadException, InterruptedException {
+        return client.request(new BankSetOccupied(linha, segmento));
+    }
 }

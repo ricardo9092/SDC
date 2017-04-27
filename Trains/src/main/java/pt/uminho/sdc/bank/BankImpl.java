@@ -3,11 +3,108 @@ package pt.uminho.sdc.bank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.Map;
+
+
 public class BankImpl implements Bank {
 
     private static Logger logger = LoggerFactory.getLogger(BankImpl.class);
 
+    
+    Map<String, Integer> linha1 = new HashMap<String, Integer>();
+    Map<String, Integer> linha2 = new HashMap<String, Integer>();
+    Map<String, Integer> linha3 = new HashMap<String, Integer>();
+    
+    
+    
+    @Override
+    public synchronized boolean requestEntry(int linha, int segmento){
+        switch(linha){
+            case 1:
+                if(checkAvailability(linha1, segmento) && checkAvailability(linha1, segmento+1))
+                    return true;
+                break;
+            case 2:
+                if(checkAvailability(linha2, segmento) && checkAvailability(linha2, segmento+1))
+                    return true;
+                break;
+            case 3:
+                if(checkAvailability(linha3, segmento) && checkAvailability(linha3, segmento+1))
+                    return true;
+                break;
+        }
+        return false;
+    }
+    
+    public synchronized boolean checkAvailability(Map<String, Integer> linha, int segmento){
+        if(segmento <= linha.size())
+            if(linha.get(Integer.toString(segmento)) == 0)
+                return true;
+        return false;
+    }
+     
+    @Override
+    public synchronized boolean setAvailable(int linha, int segmento){
+            switch(linha){
+                case 1:
+                    if(segmento <= linha1.size()){
+                        linha1.put(Integer.toString(segmento), 0);
+                    }else{
+                        return false;
+                    }
+                    break;
+                case 2:
+                    if(segmento <= linha2.size()){
+                        linha2.put(Integer.toString(segmento), 0);
+                    }else{
+                        return false;
+                    }
+                    break;
+                case 3:
+                    if(segmento <= linha3.size()){
+                        linha3.put(Integer.toString(segmento), 0);
+                    }else{
+                        return false;
+                    }
+                    break;
+            }
+            return true;
+    }
+     
+    @Override
+    public synchronized boolean setOccupied(int linha, int segmento){
+        switch(linha){
+            case 1:
+                if(segmento <= linha1.size()){
+                    linha1.put(Integer.toString(segmento), 1);
+                }else{
+                    return false;
+                }
+                break;
+            case 2:
+                if(segmento <= linha1.size()){
+                    linha2.put(Integer.toString(segmento), 1);
+                }else{
+                    return false;
+                }
+                break;
+            case 3:
+                if(segmento <= linha1.size()){
+                    linha3.put(Integer.toString(segmento), 1);
+                }else{
+                    return false;
+                }
+                break;
+            }
+            return true;
+    }
+     
+     
+    
+    
     int balance = 0;
+
 
     @Override
     public synchronized boolean operation(int value) {
