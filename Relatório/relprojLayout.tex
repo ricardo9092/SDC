@@ -1,0 +1,124 @@
+\documentclass{report}
+\usepackage[portuges]{babel}
+%\usepackage[utf8]{inputenc}
+\usepackage[latin1]{inputenc}
+
+\usepackage{url}
+%\usepackage{alltt}
+%\usepackage{fancyvrb}
+\usepackage{listings}
+%LISTING - GENERAL
+\lstset{
+	basicstyle=\small,
+	numbers=left,
+	numberstyle=\tiny,
+	numbersep=5pt,
+	breaklines=true,
+    frame=tB,
+	mathescape=true,
+	escapeinside={(*@}{@*)}
+}
+%
+%\lstset{ %
+%	language=Java,							% choose the language of the code
+%	basicstyle=\ttfamily\footnotesize,		% the size of the fonts that are used for the code
+%	keywordstyle=\bfseries,					% set the keyword style
+%	%numbers=left,							% where to put the line-numbers
+%	numberstyle=\scriptsize,				% the size of the fonts that are used for the line-numbers
+%	stepnumber=2,							% the step between two line-numbers. If it's 1 each line
+%											% will be numbered
+%	numbersep=5pt,							% how far the line-numbers are from the code
+%	backgroundcolor=\color{white},			% choose the background color. You must add \usepackage{color}
+%	showspaces=false,						% show spaces adding particular underscores
+%	showstringspaces=false,					% underline spaces within strings
+%	showtabs=false,							% show tabs within strings adding particular underscores
+%	frame=none,								% adds a frame around the code
+%	%abovecaptionskip=-.8em,
+%	%belowcaptionskip=.7em,
+%	tabsize=2,								% sets default tabsize to 2 spaces
+%	captionpos=b,							% sets the caption-position to bottom
+%	breaklines=true,						% sets automatic line breaking
+%	breakatwhitespace=false,				% sets if automatic breaks should only happen at whitespace
+%	title=\lstname,							% show the filename of files included with \lstinputlisting;
+%											% also try caption instead of title
+%	escapeinside={\%*}{*)},					% if you want to add a comment within your code
+%	morekeywords={*,...}					% if you want to add more keywords to the set
+%}
+
+\usepackage{xspace}
+\usepackage{verbatim}
+\usepackage{graphicx}
+
+\parindent=0pt
+\parskip=2pt
+
+\setlength{\oddsidemargin}{-1cm}
+\setlength{\textwidth}{18cm}
+\setlength{\headsep}{-1cm}
+\setlength{\textheight}{23cm}
+
+\def\darius{\textsf{Darius}\xspace}
+\def\java{\texttt{Java}\xspace}
+\def\pe{\emph{Publicação Eletrónica}\xspace}
+\graphicspath{}
+%%%%\input{LPgeneralDefintions}
+
+\title{Sistemas Distribuídos Confiáveis \\ \textbf{Tolerância a Faltas}\\ Relatório de Desenvolvimento}
+\author{António Anjo\\ a67660 \and João Monteiro\\ a67740 \and Ricardo Fernandes\\  pg32986}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+
+Relatório de desenvolvimento do primeiro trabalho prático da Unidade Curricular de Sistemas Distribuídos Confiáveis: Fault Tolerance.
+Neste documento apresentar-se-ão algumas das decisões tomadas durante o processo de desenvolvimento, assim como eventuais dificuldades encontradas.
+
+\end{abstract}
+
+\tableofcontents
+
+\chapter{Introdução} \label{intro}
+
+
+\section*{Estrutura do Relatório} \
+\begin{itemize}
+\item{Items}
+\end{itemize}
+
+\chapter{Chapter1} \label{ae}
+\section{Section}
+
+
+
+\begin{verbatim}
+[a-zA-Z0-9#]+"|"
+\end{verbatim}
+
+
+
+\pagebreak
+
+
+\chapter{Conclusão} \label{concl}
+
+
+\appendix
+\chapter{Código do Programa}
+
+
+
+\small\begin{verbatim}
+%{
+#include <string.h>
+#
+%%
+\end{verbatim}
+\normalsize
+
+\bibliographystyle{alpha}
+\bibliography{../Bibs/lp,prh}
+
+\end{document} 
