@@ -232,7 +232,7 @@ public class BankTester {
     }
 
     public int generateRandomStartPoint(int linha){
-        int StartPoint = 0;
+        int StartPoint = 100;
         switch(linha){
             case 1:
                 while(StartPoint > 4)
