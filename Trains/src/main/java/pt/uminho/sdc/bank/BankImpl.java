@@ -42,6 +42,9 @@ public class BankImpl implements Bank {
     public synchronized boolean requestEntry(int linha, int segmento){
         switch(linha){
             case 1:
+                if (segmento == linha1.size() -1)
+                    if(checkAvailability(linha1, segmento))
+                        return true;
                 if(checkAvailability(linha1, segmento) && checkAvailability(linha1, segmento+1))
                     return true;
                 break;
@@ -58,9 +61,9 @@ public class BankImpl implements Bank {
     }
     
     public synchronized boolean checkAvailability(Map<String, Integer> linha, int segmento){
-        if(segmento <= linha.size())
-            if(linha.get(Integer.toString(segmento)) == 0)
-                return true;
+        //if(segmento <= linha.size())
+        if(linha.get(Integer.toString(segmento)) == 0)
+            return true;
         return false;
     }
      
@@ -68,28 +71,25 @@ public class BankImpl implements Bank {
     public synchronized boolean setAvailable(int linha, int segmento){
             switch(linha){
                 case 1:
-                    if(segmento <= linha1.size()){
+                    if(segmento <= linha1.size()) {
                         linha1.put(Integer.toString(segmento), 0);
-                    }else{
-                        return false;
+                        return true;
                     }
                     break;
                 case 2:
                     if(segmento <= linha2.size()){
                         linha2.put(Integer.toString(segmento), 0);
-                    }else{
-                        return false;
+                        return true;
                     }
                     break;
                 case 3:
                     if(segmento <= linha3.size()){
                         linha3.put(Integer.toString(segmento), 0);
-                    }else{
-                        return false;
+                        return true;
                     }
                     break;
             }
-            return true;
+            return false;
     }
      
     @Override
@@ -98,26 +98,23 @@ public class BankImpl implements Bank {
             case 1:
                 if(segmento <= linha1.size()){
                     linha1.put(Integer.toString(segmento), 1);
-                }else{
-                    return false;
+                    return true;
                 }
                 break;
             case 2:
                 if(segmento <= linha1.size()){
                     linha2.put(Integer.toString(segmento), 1);
-                }else{
-                    return false;
+                    return true;
                 }
                 break;
             case 3:
                 if(segmento <= linha1.size()){
                     linha3.put(Integer.toString(segmento), 1);
-                }else{
-                    return false;
+                    return true;
                 }
                 break;
             }
-            return true;
+            return false;
     }
      
      

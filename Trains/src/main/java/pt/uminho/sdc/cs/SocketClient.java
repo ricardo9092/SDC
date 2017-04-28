@@ -28,6 +28,7 @@ public class SocketClient<T> implements Client<T> {
             	
     	this.clientName = clientName;
     	this.port=port;
+        System.out.println("Creating SocketClient");
 
         try {
 			connection.connect(InetAddress.getByName("localhost") , port, clientName, false, false);
@@ -49,14 +50,14 @@ public class SocketClient<T> implements Client<T> {
         sendMessage.setReliable();
         sendMessage.setObject(req);
 
-        try {
+        /*try {
             connection.connect(InetAddress.getByName("localhost") , port, clientName, false, false);
             group.join(connection,clientName);
         } catch (SpreadException e) {
             // TODO Auto-generated catch block
         } catch (UnknownHostException e) {
             e.printStackTrace();
-        }
+        }*/
 
         logger.info("The connection is = " + connection.isConnected());
         connection.multicast(sendMessage);
@@ -111,13 +112,13 @@ public class SocketClient<T> implements Client<T> {
     public synchronized void setReply(Reply r){
             rep = r;
             notifyAll();
-            try {
+            /*try {
                 close();
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (SpreadException e) {
                 e.printStackTrace();
-            }
+            }*/
     }
 
     
