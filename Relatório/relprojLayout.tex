@@ -73,7 +73,7 @@
 
 \begin{abstract}
 
-Relatório de desenvolvimento do primeiro trabalho prático da Unidade Curricular de Sistemas Distribuídos Confiáveis: Fault Tolerance.
+Relatório de desenvolvimento do primeiro trabalho prático da Unidade Curricular de Sistemas Distribuídos Confiáveis: Tolerância a Faltas.
 Neste documento apresentar-se-ão algumas das decisões tomadas durante o processo de desenvolvimento, assim como eventuais dificuldades encontradas.
 
 \end{abstract}
@@ -82,41 +82,56 @@ Neste documento apresentar-se-ão algumas das decisões tomadas durante o processo
 
 \chapter{Introdução} \label{intro}
 
+O trabalho consiste na implementação em Java, usando o protocolo de comunicação em grupo Spread, de um par cliente/servidor tolerante a faltas.
 
-\section*{Estrutura do Relatório} \
-\begin{itemize}
-\item{Items}
-\end{itemize}
+A aplicação a desenvolver é um sistema de controlo de tráfego ferroviário. Considerando linhas ferroviárias divididas em segmentos numerados, o sistema deve garantir que nunca há duas composições num mesmo segmento assim como a existência de um segmento de linha livre entre duas composições.
 
-\chapter{Chapter1} \label{ae}
-\section{Section}
+É esperado que composições possam efetuar pedidos de acesso a segmentos da linha, assim como enviar notificações de entrada ou saída de um segmento. O servidor deve poder manter uma lista de posições atuais das composições assim como um histórico de alarmes correspondentes a notificações de situações de perigo.
 
 
-
-\begin{verbatim}
-[a-zA-Z0-9#]+"|"
-\end{verbatim}
+\chapter{Tolerância a faltas e Comunicação}
 
 
+\section{Replicação} 
+
+O aspeto deste sistema que o torna tolerante a faltas é a utilização de um protocolo de \textbf{replicação ativa}, sendo a ideia deste protocolo que exista um grupo de no mínimo 2 servidores e, quando o cliente pretende fazer um pedido, este seja enviado a todas as réplicas.
+
+{\centering
+\includegraphics[scale=0.35]{rep_ativa.png}\par
+}
+
+Cada uma das réplicas processa então o pedido, atualiza o seu próprio estado e responde ao cliente. Fica assim ao cargo do cliente esperar pelas respostas que receber e tratá-las como entender.
+
+
+\subsection{Mensagens Duplicadas}
+
+É importante notar que, dado que os pedidos chegam a múltiplos servidores e todos eles vão responder, o cliente vai receber múltiplas respostas para cada pedido.
+
+Se esta situação não for devidamente tratada, isto pode levar a problemas no sistema, como o cliente ler a resposta ao pedido errado.
+
+Como solução a este problema, cada pedido é etiquetado com um número de sequência, que é copiado para a resposta pelo servidor. Assim, o cliente ignora todas as respostas cuja etiqueta não correspondam ao pedido esperado.
+
+\newpage
+
+\subsection{Replicação Passiva}
+
+Uma alternativa ao protocolo de replicação utilizado seria a \textbf{replicação passiva}. Este tipo de replicação introduz o conceito de servidor primário.
+
+Neste tipo de replicação, o pedido do cliente chega apenas ao servidor primário, sendo aqui processado. O servidor atualiza o seu estado e envia depois uma mensagem de atualização de estado às réplicas. Cada réplica atualiza o seu estado e envia uma mensagem de acknowledgment ao servidor primário. Só nesta fase é que este envia a resposta ao cliente. Em caso de falha do servidor primário, uma das réplicas toma o seu lugar.
+
+Este tipo de replicação tem a vantagem de ser transparente para o cliente e resolve o problema mencionado anteriormente das mensagens replicadas. No entanto, a sua dificuldade acrescida de implementação levou nos a manter o uso da replicação ativa.
+
+\section{Troca de Mensagens}
+
+A comunicação entre as composições e o sistema de controlo tráfego é feita utilizando o protocolo de comunicação em grupo Spread. 
+
+\chapter{Funcionamento}
+\section{Linhas e Segmentos}
 
 \pagebreak
 
 
 \chapter{Conclusão} \label{concl}
-
-
-\appendix
-\chapter{Código do Programa}
-
-
-
-\small\begin{verbatim}
-%{
-#include <string.h>
-#
-%%
-\end{verbatim}
-\normalsize
 
 \bibliographystyle{alpha}
 \bibliography{../Bibs/lp,prh}
