@@ -17,6 +17,7 @@ public class BankOperationRequest extends Request<Bank,Boolean> {
     }
 
     public String toString() {
-        return "Operatiton Request: value = "+value;
+        return "Operatiton Request: value = "+value ;
     }
+
 }

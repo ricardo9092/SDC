@@ -16,6 +16,7 @@ public class SocketClient<T> implements Client<T> {
     private SpreadMessage sendMessage;
     private Reply rep;
     private int port;
+    private int messageMark;
     
     private SpreadConnection connection = new SpreadConnection();
     private SpreadGroup group = new SpreadGroup();
@@ -28,7 +29,8 @@ public class SocketClient<T> implements Client<T> {
             	
     	this.clientName = clientName;
     	this.port=port;
-        System.out.println("Creating SocketClient");
+    	this.messageMark = 0;
+        //System.out.println("Creating SocketClient");
 
         try {
 			connection.connect(InetAddress.getByName("localhost") , port, clientName, false, false);
@@ -44,65 +46,59 @@ public class SocketClient<T> implements Client<T> {
     
     public synchronized <V> V request(Request<T,V> req) throws RemoteInvocationException, SpreadException, InterruptedException {
 
-
+        int currentMark = messageMark;
+        boolean completed = false;
         sendMessage = new SpreadMessage();
         sendMessage.addGroup("groupServer");
         sendMessage.setReliable();
+        System.out.println("The REQ is = " + req);
+        req.setMessageMark(messageMark);
+        messageMark = messageMark + 1;
         sendMessage.setObject(req);
 
-        /*try {
-            connection.connect(InetAddress.getByName("localhost") , port, clientName, false, false);
-            group.join(connection,clientName);
-        } catch (SpreadException e) {
-            // TODO Auto-generated catch block
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }*/
-
-        logger.info("The connection is = " + connection.isConnected());
+        //logger.info("The connection is = " + connection.isConnected());
         connection.multicast(sendMessage);
 
-        logger.info("message multicast");
+        //logger.info("message multicast");
 
-        //new Thread(){
-             Reply r=null;
-             SpreadMessage receivedMessage = new SpreadMessage();
-            
-            //public void run(){
-                logger.info("thread running");
-                try {
-                    receivedMessage = connection.receive();
-                    logger.info("message received");
-					//theMessageList.add(receivedMessage);
-				} catch (InterruptedIOException e) {
-					e.printStackTrace();
-				} catch (SpreadException e) {
-                    logger.info("exception");
-					e.printStackTrace();
-				}
+        Reply r=null;
+        SpreadMessage receivedMessage = new SpreadMessage();
+
+        //logger.info("thread running");
+        try {
+            receivedMessage = connection.receive();
+            //logger.info("message received");
+        } catch (InterruptedIOException e) {
+            e.printStackTrace();
+        } catch (SpreadException e) {
+            //logger.info("exception");
+            e.printStackTrace();
+        }
                 
-                try {
-                    //receivedMessage = theMessageList.get(0);
-					System.out.println("Client Received = " + receivedMessage.getObject());
-					r = (Reply) receivedMessage.getObject();
-                    System.out.println("The reply is after = " + r);
-				} catch (SpreadException e) {
-					e.printStackTrace();
-				}
-                                
-                setReply(r);
-            //}
-        //}.start();
-        
-        
-            
+        try {
+            //receivedMessage = theMessageList.get(0);
+            //System.out.println("Client Received = " + receivedMessage.getObject());
+            r = (Reply) receivedMessage.getObject();
+            //System.out.println("The reply is after = " + r);
+        } catch (SpreadException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Received Message Mark = " + r.getMessageMark() + " current Mark = " + currentMark + " and completed = " + completed);
+        if(r.getMessageMark() == currentMark && completed == false)
+        {
+            System.out.println("Received Message Mark = " + r.getMessageMark() + " and first time");
+            setReply(r);
+            completed = true;
+        }
+
         while(rep == null){
             wait();
         }
         
         
         if (rep instanceof ValueReply) {
-            System.out.println(((ValueReply) rep).getValue());
+            //System.out.println(((ValueReply) rep).getValue());
             return ((ValueReply<V>) rep).getValue();
         } else {
             throw ((ErrorReply)rep).getException();
@@ -112,13 +108,6 @@ public class SocketClient<T> implements Client<T> {
     public synchronized void setReply(Reply r){
             rep = r;
             notifyAll();
-            /*try {
-                close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (SpreadException e) {
-                e.printStackTrace();
-            }*/
     }
 
     

@@ -21,4 +21,5 @@ public class BankEntryRequest extends Request<Bank,Boolean> {
     public String toString() {
         return "Entry Request: Linha = "+linha+ " Segmento = "+segmento;
     }
+
 }

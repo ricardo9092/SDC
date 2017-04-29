@@ -22,6 +22,7 @@ public class BankImpl implements Bank {
         linha1.put("2",0);
         linha1.put("3",0);
         linha1.put("4",0);
+        linha3.put("5",0);
 
         linha2.put("0",0);
         linha2.put("1",0);
@@ -36,6 +37,15 @@ public class BankImpl implements Bank {
         linha3.put("1",0);
         linha3.put("2",0);
         linha3.put("3",0);
+        linha3.put("4",0);
+        linha3.put("5",0);
+        linha3.put("6",0);
+        linha3.put("7",0);
+        linha3.put("8",0);
+        linha3.put("9",0);
+        linha3.put("10",0);
+
+
     }
     
     @Override

@@ -17,6 +17,7 @@ import java.io.InterruptedIOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 
 public class SocketServer<T> {
 
@@ -80,20 +81,23 @@ public class SocketServer<T> {
                 try {
 					receivedMessage = connection.receive();
 					g = receivedMessage.getSender();
-					Request<T, ?> req = (Request<T,?>) receivedMessage.getObject();
-					System.out.println("Request Received = " + receivedMessage.getObject());
+                    Request<T, ?> req = (Request<T,?>) receivedMessage.getObject();
+                    System.out.println("Message Mark = " + req.getMessageMark());
+                    System.out.println("Request Received = " + receivedMessage.getObject());
+
                     //Reply rep = null;
 
                     while(rep == null || rep.toString().substring(7).equals("false")){
                         try {
                             rep = new ValueReply<>(req.apply(state));
-                            System.out.println("Testing REP" + rep.toString().substring(7));
-                            System.out.println("The reply should be = " + rep);
-                            logger.trace("current state: {}", state);
+                            rep.setMessageMark(req.getMessageMark());
+                            //System.out.println("Testing REP" + rep.toString().substring(7));
+                            //System.out.println("The reply should be = " + rep);
+                            //logger.trace("current state: {}", state);
                         } catch(RemoteInvocationException e) {
                             rep = new ErrorReply(e);
                         } catch (Exception e) {
-                            logger.warn("unexpected application exception", e);
+                            //logger.warn("unexpected application exception", e);
                             rep = new ErrorReply(new ServerSideException(e));
                         }
                     }
@@ -110,7 +114,7 @@ public class SocketServer<T> {
 	                sendMessage.addGroup(g);
 	                sendMessage.setReliable();
 					connection.multicast(sendMessage);
-                    System.out.println("Trying to send the message to the Client = " + sendMessage.getObject());
+                    //System.out.println("Trying to send the message to the Client = " + sendMessage.getObject());
 
 				} catch (SpreadException e) {
 					// TODO Auto-generated catch block

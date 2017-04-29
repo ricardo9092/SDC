@@ -187,21 +187,23 @@ public class BankTester {
                 Bank bank = supplier.get();
 
                 logger.debug("worker connected to bank");
-                synchronized(System.out) {
+                //synchronized(System.out) {
                     System.out.println("TESTG");
                     while (currentPostion < leavePoint) {
                         if (entered) {
+                            System.out.println("THERE");
                             bank.requestEntry(linha, currentPostion + 1);
                             bank.setOccupied(linha, currentPostion + 1);
                             bank.setAvailable(linha, currentPostion);
                             currentPostion = currentPostion + 1;
                         } else {
+                            System.out.println("HERE");
                             bank.requestEntry(linha, entryPoint);
                             bank.setOccupied(linha, currentPostion);
                             entered = true;
                         }
                     }
-                }
+                //}
                 /*
                 while (isRunning()) {
                     int op = 0;
@@ -235,16 +237,16 @@ public class BankTester {
         int StartPoint = 100;
         switch(linha){
             case 1:
-                while(StartPoint > 4)
-                    StartPoint = random.nextInt(5);
+                while(StartPoint >= 5)
+                    StartPoint = random.nextInt(6);
                 break;
             case 2:
-                while(StartPoint > 7)
+                while(StartPoint >= 7)
                     StartPoint = random.nextInt(8);
                 break;
             case 3:
-                while(StartPoint > 3)
-                    StartPoint = random.nextInt(4);
+                while(StartPoint >= 10)
+                    StartPoint = random.nextInt(11);
                 break;
         }
         System.out.println("Start Point = " + StartPoint);
@@ -256,7 +258,7 @@ public class BankTester {
         switch(linha){
             case 1:
                 while(EndPoint <= startPoint)
-                    EndPoint = random.nextInt(5);
+                    EndPoint = random.nextInt(6);
                 break;
             case 2:
                 while(EndPoint <= startPoint)
@@ -264,7 +266,7 @@ public class BankTester {
                 break;
             case 3:
                 while(EndPoint <= startPoint)
-                    EndPoint = random.nextInt(4);
+                    EndPoint = random.nextInt(11);
                 break;
         }
         System.out.println("End Point = " + EndPoint);

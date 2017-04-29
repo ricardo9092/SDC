@@ -10,6 +10,12 @@ import java.nio.ByteBuffer;
 
 public abstract class Message implements Serializable {
 
+    private int messageMark;
+
+    public Message(){
+        messageMark = 0;
+    }
+
     public byte[] toByteArray() throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(baos);
@@ -31,5 +37,13 @@ public abstract class Message implements Serializable {
         byte[] array = new byte[buffer.remaining()];
         buffer.get(array);
         return fromByteArray(array);
+    }
+
+    public void setMessageMark(int messageMark) {
+        this.messageMark = messageMark;
+    }
+
+    public int getMessageMark() {
+        return messageMark;
     }
 }
