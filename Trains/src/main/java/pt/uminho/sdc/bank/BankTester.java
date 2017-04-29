@@ -203,6 +203,8 @@ public class BankTester {
                             entered = true;
                         }
                     }
+                    //***** Free the last station in case other trains want to come to this segment **** ////
+                    bank.setAvailable(linha,currentPostion);
                 //}
                 /*
                 while (isRunning()) {

@@ -112,13 +112,13 @@ public class BankImpl implements Bank {
                 }
                 break;
             case 2:
-                if(segmento <= linha1.size()){
+                if(segmento <= linha2.size()){
                     linha2.put(Integer.toString(segmento), 1);
                     return true;
                 }
                 break;
             case 3:
-                if(segmento <= linha1.size()){
+                if(segmento <= linha3.size()){
                     linha3.put(Integer.toString(segmento), 1);
                     return true;
                 }

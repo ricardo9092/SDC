@@ -19,7 +19,7 @@ public class BankSetOccupied extends Request<Bank,Boolean> {
     }
 
     public String toString() {
-        return "Entry Request: Linha = "+linha+ " Segmento = "+segmento;
+        return "Occupied Request: Linha = "+linha+ " Segmento = "+segmento;
     }
 
 }

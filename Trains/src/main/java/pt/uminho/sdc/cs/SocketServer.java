@@ -75,22 +75,25 @@ public class SocketServer<T> {
         
         public void run(){
             while (true) {
-                
+                System.out.println("WHILE");
             	Reply rep = null;
                 SpreadGroup g = null;
                 try {
 					receivedMessage = connection.receive();
+					System.out.println("Received Something");
 					g = receivedMessage.getSender();
                     Request<T, ?> req = (Request<T,?>) receivedMessage.getObject();
-                    System.out.println("Message Mark = " + req.getMessageMark());
-                    System.out.println("Request Received = " + receivedMessage.getObject());
+                    System.out.println("Request Received = " + receivedMessage.getObject() + " Mark = " + req.getMessageMark());
 
                     //Reply rep = null;
 
                     while(rep == null || rep.toString().substring(7).equals("false")){
+
                         try {
                             rep = new ValueReply<>(req.apply(state));
                             rep.setMessageMark(req.getMessageMark());
+                            if(rep != null)
+                                System.out.println("REP STRING = " + rep.toString());
                             //System.out.println("Testing REP" + rep.toString().substring(7));
                             //System.out.println("The reply should be = " + rep);
                             //logger.trace("current state: {}", state);
@@ -110,10 +113,12 @@ public class SocketServer<T> {
 				}
                 
                 try {
-					sendMessage.setObject(rep);
+                    System.out.println("BEFORE SENDING THE MESSAGE");
+                    sendMessage.setObject(rep);
 	                sendMessage.addGroup(g);
 	                sendMessage.setReliable();
 					connection.multicast(sendMessage);
+                    System.out.println("AFTER SENDING THE MESSAGE");
                     //System.out.println("Trying to send the message to the Client = " + sendMessage.getObject());
 
 				} catch (SpreadException e) {
@@ -121,7 +126,7 @@ public class SocketServer<T> {
 					e.printStackTrace();
 				}
 
-               
+               System.out.println("Should Stay in WHILE");
                 
 			/*	Request<T, ?> req = null;
 

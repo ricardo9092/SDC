@@ -19,6 +19,6 @@ public class BankSetAvailable extends Request<Bank,Boolean> {
     }
 
     public String toString() {
-        return "Entry Request: Linha = "+linha+ " Segmento = "+segmento;
+        return "Available Request: Linha = "+linha+ " Segmento = "+segmento;
     }
 }
