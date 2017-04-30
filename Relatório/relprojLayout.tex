@@ -102,6 +102,8 @@ O aspeto deste sistema que o torna tolerante a faltas é a utilização de um proto
 
 Cada uma das réplicas processa então o pedido, atualiza o seu próprio estado e responde ao cliente. Fica assim ao cargo do cliente esperar pelas respostas que receber e tratá-las como entender.
 
+Isto significa então que, em caso de falta de um servidor, os outros continuam a funcionar normalmente.
+
 
 \subsection{Mensagens Duplicadas}
 
@@ -111,7 +113,7 @@ Se esta situação não for devidamente tratada, isto pode levar a problemas no sis
 
 Como solução a este problema, cada pedido é etiquetado com um número de sequência, que é copiado para a resposta pelo servidor. Assim, o cliente ignora todas as respostas cuja etiqueta não correspondam ao pedido esperado.
 
-\newpage
+\pagebreak
 
 \subsection{Replicação Passiva}
 
@@ -151,8 +153,31 @@ Cada segmento tem a ele associado um valor binário que indica se está, em dado m
 
 \pagebreak
 
+\section{Navegação}
 
-\chapter{Conclusão} \label{concl}
+Iniciados os servidores, o sistema pode ser testado com o comando \texttt{./run TestRemote --X--}, sendo X o número de composições que vão navegar o sistema durante o teste.
+
+\begin{itemize}
+\item{Cada composição escolhe aleatoriamente uma linha, um segmento de entrada e um segmento de saída. Durante a simulação, esta vai navegar a linha no sentido crescente entre estes dois pontos. Por exemplo, Linha 1 - Segmento 1 - Segmento 6.}
+\item{Para cada segmento do caminho a navegar, incluindo o de entrada, a composição envia ao servidor um pedido de entrada (Entry Request). O servidor responderá com a autorização para entrar quando e só se houver condições para tal. Aquando da receção da resposta, a composição avança para esse segmento.}
+\item{}
+\item{}
+\item{Neste ponto, o servidor já atualizou o seu estado, refletindo a ocupação ou não dos segmentos envolvidos na operação.}
+\item{O processo repete-se até que todas as composições terminem a sua viagem.}
+\end{itemize}
+
+\subsection{Entry Request}
+
+
+\chapter{Conclusões} \label{concl}
+
+Este projeto serviu para o grupo consolidar e pôr em prática os conhecimentos obtidos sobre replicação de servidores e transferência de estado, assim como multicasting e comunicação em grupo através do uso do protocolo Spread.
+
+Foram atingidos os requisitos mínimos do trabalho, tendo sido desenvolvido um par cliente-servidor com replicação ativa e com transferência de estado, assim como uma aplicação de teste do sistema.
+
+Ficam no entanto abertas vias para evolução, como a obtenção de medidas de desempenho e a realização de testes em multiplas máquinas com simulação de falhas.
+
+Para além disso, ????
 
 \bibliographystyle{alpha}
 \bibliography{../Bibs/lp,prh}
