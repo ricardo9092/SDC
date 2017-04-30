@@ -22,7 +22,7 @@ public class BankImpl implements Bank {
         linha1.put("2",0);
         linha1.put("3",0);
         linha1.put("4",0);
-        linha3.put("5",0);
+        linha1.put("5",0);
 
         linha2.put("0",0);
         linha2.put("1",0);
@@ -53,18 +53,36 @@ public class BankImpl implements Bank {
         switch(linha){
             case 1:
                 if (segmento == linha1.size() -1)
-                    if(checkAvailability(linha1, segmento))
+                    if(checkAvailability(linha1, segmento)){
+                        setOccupied(linha, segmento);
                         return true;
-                if(checkAvailability(linha1, segmento) && checkAvailability(linha1, segmento+1))
+                    }
+                if(checkAvailability(linha1, segmento) && checkAvailability(linha1, segmento+1)){
+                    setOccupied(linha, segmento);
                     return true;
+                }
                 break;
             case 2:
-                if(checkAvailability(linha2, segmento) && checkAvailability(linha2, segmento+1))
+                if (segmento == linha2.size() -1)
+                    if(checkAvailability(linha2, segmento)){
+                        setOccupied(linha, segmento);
+                        return true;
+                    }
+                if(checkAvailability(linha2, segmento) && checkAvailability(linha2, segmento+1)){
+                    setOccupied(linha, segmento);
                     return true;
+                }
                 break;
             case 3:
-                if(checkAvailability(linha3, segmento) && checkAvailability(linha3, segmento+1))
+                if (segmento == linha3.size() -1)
+                    if(checkAvailability(linha3, segmento)){
+                        setOccupied(linha, segmento);
+                        return true;
+                    }
+                if(checkAvailability(linha3, segmento) && checkAvailability(linha3, segmento+1)){
+                    setOccupied(linha, segmento);
                     return true;
+                }
                 break;
         }
         return false;
@@ -72,7 +90,7 @@ public class BankImpl implements Bank {
     
     public synchronized boolean checkAvailability(Map<String, Integer> linha, int segmento){
         //if(segmento <= linha.size())
-        System.out.println("TAMANHO LINHA = " + linha.size() + " AND SEGMENTO = " + segmento);
+        System.out.println("TAMANHO LINHA = " + linha.size() + " AND SEGMENTO = " + segmento + " RESULT = " + linha.get(Integer.toString(segmento)));
         if(linha.get(Integer.toString(segmento)) == 0)
             return true;
         return false;

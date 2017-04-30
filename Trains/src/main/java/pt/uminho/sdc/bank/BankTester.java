@@ -68,8 +68,10 @@ public class BankTester {
             int leavePoint = generateRandomEndPoint(linha, entryPoint);
             worker[i] = new Worker(linha, entryPoint, leavePoint);
         }
-        for(int i=0; i<worker.length; i++)
+        for(int i=0; i<worker.length; i++) {
             worker[i].start();
+            //Thread.sleep(1000);
+        }
 
         if (!waitInStage(Stage.Warmup, time/10)) {
             logger.error("test aborted during warmup");
@@ -174,13 +176,13 @@ public class BankTester {
                         if (entered) {
                             //System.out.println("THERE");
                             bank.requestEntry(linha, currentPostion + 1);
-                            bank.setOccupied(linha, currentPostion + 1);
+                            //bank.setOccupied(linha, currentPostion + 1);
                             bank.setAvailable(linha, currentPostion);
                             currentPostion = currentPostion + 1;
                         } else {
                             //System.out.println("HERE");
                             bank.requestEntry(linha, entryPoint);
-                            bank.setOccupied(linha, currentPostion);
+                            //bank.setOccupied(linha, currentPostion);
                             entered = true;
                         }
                     }

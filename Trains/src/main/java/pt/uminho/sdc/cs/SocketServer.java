@@ -69,9 +69,7 @@ public class SocketServer<T> {
     
     
     private class Worker extends Thread {
-        public Worker (){
-            
-        }
+        public Worker (){}
         
         public void run(){
             while (true) {
@@ -85,17 +83,53 @@ public class SocketServer<T> {
                     Request<T, ?> req = (Request<T,?>) receivedMessage.getObject();
                     System.out.println("Request Received = " + receivedMessage.getObject() + " Mark = " + req.getMessageMark());
 
-                    //Reply rep = null;
 
-                    while(rep == null || rep.toString().substring(7).equals("false")){
+                    Thread t = new Thread(new MessageTreater(g, req));
+                    t.start();
+                    //Reply rep = null;
+                   /* new Thread(g){
+                        Reply rep = null;
+                        SpreadGroup g = null;
+                        SpreadMessage sendMessage = new SpreadMessage();
+                        public void run(){
+                            while(rep == null || rep.toString().substring(7).equals("false")){
+
+                                try {
+                                    rep = new ValueReply<>(req.apply(state));
+                                    rep.setMessageMark(req.getMessageMark());
+                                    if(rep != null)
+                                        System.out.println("REP STRING = " + rep.toString());
+                                    //logger.trace("current state: {}", state);
+                                } catch(RemoteInvocationException e) {
+                                    rep = new ErrorReply(e);
+                                } catch (Exception e) {
+                                    //logger.warn("unexpected application exception", e);
+                                    rep = new ErrorReply(new ServerSideException(e));
+                                }
+                            }
+
+                            try {
+                                System.out.println("BEFORE SENDING THE MESSAGE");
+                                sendMessage.setObject(rep);
+                                sendMessage.addGroup(g);
+                                sendMessage.setReliable();
+                                connection.multicast(sendMessage);
+                                System.out.println("AFTER SENDING THE MESSAGE");
+
+                            } catch (SpreadException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+                        }
+                    }.init(g).start();*/
+
+                    /*while(rep == null || rep.toString().substring(7).equals("false")){
 
                         try {
                             rep = new ValueReply<>(req.apply(state));
                             rep.setMessageMark(req.getMessageMark());
                             if(rep != null)
                                 System.out.println("REP STRING = " + rep.toString());
-                            //System.out.println("Testing REP" + rep.toString().substring(7));
-                            //System.out.println("The reply should be = " + rep);
                             //logger.trace("current state: {}", state);
                         } catch(RemoteInvocationException e) {
                             rep = new ErrorReply(e);
@@ -103,7 +137,7 @@ public class SocketServer<T> {
                             //logger.warn("unexpected application exception", e);
                             rep = new ErrorReply(new ServerSideException(e));
                         }
-                    }
+                    }*/
 				} catch (InterruptedIOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -111,7 +145,8 @@ public class SocketServer<T> {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-                
+
+				/*
                 try {
                     System.out.println("BEFORE SENDING THE MESSAGE");
                     sendMessage.setObject(rep);
@@ -119,12 +154,11 @@ public class SocketServer<T> {
 	                sendMessage.setReliable();
 					connection.multicast(sendMessage);
                     System.out.println("AFTER SENDING THE MESSAGE");
-                    //System.out.println("Trying to send the message to the Client = " + sendMessage.getObject());
 
 				} catch (SpreadException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}
+				} */
 
                System.out.println("Should Stay in WHILE");
                 
@@ -167,6 +201,47 @@ public class SocketServer<T> {
 					e.printStackTrace();
 				}*/
             } 
+        }
+    }
+
+    class MessageTreater implements Runnable {
+        SpreadGroup g;
+        Reply rep = null;
+        Request req = null;
+        SpreadMessage sendMessage;
+
+
+        MessageTreater(SpreadGroup group, Request request) { g = group; req = request; sendMessage = new SpreadMessage();}
+
+        public void run(){
+            while(rep == null || rep.toString().substring(7).equals("false")){
+
+                try {
+                    rep = new ValueReply<>(req.apply(state));
+                    rep.setMessageMark(req.getMessageMark());
+                    if(rep != null)
+                        System.out.println("REP STRING = " + rep.toString());
+                    //logger.trace("current state: {}", state);
+                } catch(RemoteInvocationException e) {
+                    rep = new ErrorReply(e);
+                } catch (Exception e) {
+                    //logger.warn("unexpected application exception", e);
+                    rep = new ErrorReply(new ServerSideException(e));
+                }
+            }
+
+            try {
+                System.out.println("BEFORE SENDING THE MESSAGE");
+                sendMessage.setObject(rep);
+                sendMessage.addGroup(g);
+                sendMessage.setReliable();
+                connection.multicast(sendMessage);
+                System.out.println("AFTER SENDING THE MESSAGE");
+
+            } catch (SpreadException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
     }
 
