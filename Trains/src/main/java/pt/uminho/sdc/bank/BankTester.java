@@ -163,41 +163,22 @@ public class BankTester {
             this.entered = false;
         }
 
-        public void setLinha(int linha){
-            this.linha = linha;
-        }
-        public int getLinha(){
-            return linha;
-        }
-        public void setEntryPoint(int entryPoint){
-            this.entryPoint = entryPoint;
-        }
-        public int getEntryPoint() {
-            return entryPoint;
-        }
-        public void setLeavePoint(int leavePoint){
-            this.leavePoint = leavePoint;
-        }
-        public int getLeavePoint() {
-            return leavePoint;
-        }
-
         public void run() {
             try {
                 Bank bank = supplier.get();
 
                 logger.debug("worker connected to bank");
                 //synchronized(System.out) {
-                    System.out.println("TESTG");
+                    //System.out.println("TESTG");
                     while (currentPostion < leavePoint) {
                         if (entered) {
-                            System.out.println("THERE");
+                            //System.out.println("THERE");
                             bank.requestEntry(linha, currentPostion + 1);
                             bank.setOccupied(linha, currentPostion + 1);
                             bank.setAvailable(linha, currentPostion);
                             currentPostion = currentPostion + 1;
                         } else {
-                            System.out.println("HERE");
+                            //System.out.println("HERE");
                             bank.requestEntry(linha, entryPoint);
                             bank.setOccupied(linha, currentPostion);
                             entered = true;
@@ -206,21 +187,6 @@ public class BankTester {
                     //***** Free the last station in case other trains want to come to this segment **** ////
                     bank.setAvailable(linha,currentPostion);
                 //}
-                /*
-                while (isRunning()) {
-                    int op = 0;
-                    long before = System.nanoTime();
-                    if (random.nextFloat() < .1) {
-                        int val = bank.getBalance();
-                        logger.info("Balance = " + val);
-                    } else {
-                        op = random.nextInt(100) - 60;
-                        if (!bank.operation(op))
-                            op = 0;
-                    }
-                    long after = System.nanoTime();
-                    log(after - before, op);
-                }*/
             } catch(Exception e) {
                 logger.error("worker stopping on exception", e);
                 setStage(Stage.Error);

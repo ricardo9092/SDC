@@ -72,6 +72,7 @@ public class BankImpl implements Bank {
     
     public synchronized boolean checkAvailability(Map<String, Integer> linha, int segmento){
         //if(segmento <= linha.size())
+        System.out.println("TAMANHO LINHA = " + linha.size() + " AND SEGMENTO = " + segmento);
         if(linha.get(Integer.toString(segmento)) == 0)
             return true;
         return false;

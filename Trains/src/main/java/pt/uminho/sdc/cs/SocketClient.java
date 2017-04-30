@@ -9,6 +9,7 @@ import java.io.InterruptedIOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class SocketClient<T> implements Client<T> {
     private static Logger logger = LoggerFactory.getLogger(SocketClient.class);
@@ -32,6 +33,9 @@ public class SocketClient<T> implements Client<T> {
     	this.port=port;
     	this.messageMark = 0;
     	this.currentMark = -1;
+        UUID idOne = UUID.randomUUID();
+        clientName = clientName + idOne.toString().substring(idOne.toString().length() - 12);
+    	System.out.println("Client Name = " + clientName + idOne.toString().substring(idOne.toString().length() - 12));
         //System.out.println("Creating SocketClient");
 
         try {
