@@ -89,7 +89,7 @@ A aplicação a desenvolver é um sistema de controlo de tráfego ferroviário. Consi
 É esperado que composições possam efetuar pedidos de acesso a segmentos da linha, assim como enviar notificações de entrada ou saída de um segmento. O servidor deve poder manter uma lista de posições atuais das composições assim como um histórico de alarmes correspondentes a notificações de situações de perigo.
 
 
-\chapter{Tolerância a faltas e Comunicação}
+\chapter{Tolerância a faltas}
 
 
 \section{Replicação} 
@@ -121,12 +121,33 @@ Neste tipo de replicação, o pedido do cliente chega apenas ao servidor primário,
 
 Este tipo de replicação tem a vantagem de ser transparente para o cliente e resolve o problema mencionado anteriormente das mensagens replicadas. No entanto, a sua dificuldade acrescida de implementação levou nos a manter o uso da replicação ativa.
 
+\chapter{Implementação e Funcionamento}
+
 \section{Troca de Mensagens}
 
 A comunicação entre as composições e o sistema de controlo tráfego é feita utilizando o protocolo de comunicação em grupo Spread. 
 
-\chapter{Funcionamento}
+O Spread é um toolkit open source destinado à utilização em aplicações distribuídas que requerem alta disponibilidade, performance e robustez de comunicação entre grupos de intervenientes.
+
+Na aplicação desenvolvida, os vários servidores constituem um SpreadGroup, isto é, um grupo para o qual uma mensagem pode ser multicast para todos os seus elementos simultaneamente. Cada composição tem a ela associada também o seu próprio SpreadGroup privado, o qual vai estar especificado nas mensagens que envia.
+
+Assim, quando uma composição pretende comunicar com os servidores, faz multicast da sua mensagem para todas as réplicas, as quais vão processar o pedido, obter o grupo privado da composição que o enviou através do método \texttt{getSender} e transmitir para esse grupo a resposta ao pedido.
+
 \section{Linhas e Segmentos}
+
+Como sugerido no enunciado do trabalho, o sistema está pré-configurado com um conjunto de linhas e respetivos segmentos.
+
+Construíram-se 3 linhas unidireccionais, sendo que os seus segmentos são numerados por ordem crescente no sentido da linha.
+
+\begin{itemize}
+\item{Linha 1 - 6 Segmentos}
+\item{Linha 2 - 8 Segmentos}
+\item{Linha 3 - 11 Segmentos}
+\end{itemize}
+
+Ao entrar no sistema, cada composição escolhe uma linha, um segmento de entrada e um segmento de saída, utilizando o sistema de controlo de tráfego para entrar na linha e navegar até ao seu destino.
+
+Cada segmento tem a ele associado um valor binário que indica se está, em dado momento, ocupado ou livre.
 
 \pagebreak
 
