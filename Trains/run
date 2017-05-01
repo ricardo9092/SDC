@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-clsname=`find src/main/java/ -name $1.java | head -1 | cut -d/ -f4- | cut -d. -f1 | cut -c2- | tr / .`
+clsname=`find src/main/java/ -name $1.java | head -1 | cut -d/ -f4- | cut -d. -f1 | tr / .`
 
 if [ -z $clsname ]
 then

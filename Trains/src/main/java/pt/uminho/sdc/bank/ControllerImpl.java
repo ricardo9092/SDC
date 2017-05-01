@@ -7,16 +7,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class BankImpl implements Bank {
+public class ControllerImpl implements Controller {
 
-    private static Logger logger = LoggerFactory.getLogger(BankImpl.class);
+    private static Logger logger = LoggerFactory.getLogger(ControllerImpl.class);
 
     
     Map<String, Integer> linha1 = new HashMap<String, Integer>();
     Map<String, Integer> linha2 = new HashMap<String, Integer>();
     Map<String, Integer> linha3 = new HashMap<String, Integer>();
 
-    public BankImpl(){
+    public ControllerImpl(){
         linha1.put("0",0);
         linha1.put("1",0);
         linha1.put("2",0);

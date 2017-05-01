@@ -4,13 +4,13 @@ import pt.uminho.sdc.cs.SocketServer;
 
 import java.io.IOException;
 
-public class BankServer {
+public class Servers {
     public static void main(String[] args) throws IOException {
 
         new Thread(){
             public void run(){
                 try{
-                    new SocketServer<>(4803, new BankImpl(), "srv1").serve();
+                    new SocketServer<>(4803, new ControllerImpl(), "srv1").serve();
                 }catch(Exception e){
                     e.printStackTrace();
                 }
@@ -19,7 +19,7 @@ public class BankServer {
         new Thread(){
             public void run(){
                 try{
-                    new SocketServer<>(4803, new BankImpl(), "srv2").serve();
+                    new SocketServer<>(4803, new ControllerImpl(), "srv2").serve();
                 }catch(Exception e){
                     e.printStackTrace();
                 }
