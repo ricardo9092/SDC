@@ -30,7 +30,8 @@ public class Tester {
         this.supplier = supplier;
         this.time = seconds*1000;
         this.random = new Random();
-        logger.info("testing controller implementation: threads = {}, seconds = {}", nthr, seconds);
+        //logger.info("testing controller implementation: threads = {}, seconds = {}", nthr, seconds);
+        System.out.println("Running simulation with "+nthr+" trains...");
     }
 
     public Tester(ContollerSupplier supplier, String[] args) {
@@ -45,7 +46,9 @@ public class Tester {
             seconds = Integer.parseInt(args[1]);
         this.time = seconds*1000;
         this.random = new Random();
-        logger.info("testing controller implementation: threads = {}, seconds = {}", nthr, seconds);
+        //logger.info("testing controller implementation: threads = {}, seconds = {}", nthr, seconds);
+        System.out.println("Running simulation with "+nthr+" trains...");
+
     }
 
     public void test() throws InterruptedException, SpreadException {
@@ -76,7 +79,7 @@ public class Tester {
 
         long before = System.nanoTime();
 
-        logger.info("warmup complete: running!");
+        //logger.info("warmup complete: running!");
 
         setStage(Stage.Run);
 
@@ -88,7 +91,7 @@ public class Tester {
 
         long after = System.nanoTime();
 
-        logger.info("complete: shutting down");
+        //logger.info("complete: shutting down");
 
 
         for(int i=0; i<worker.length; i++) {
@@ -100,7 +103,7 @@ public class Tester {
             return;
         }
 
-        logger.info("performance: {} ops, {} ops/s, {} s", nops, nops/((after-before)/1e9d), (totalrtt/1e9d)/nops);
+        //logger.info("performance: {} ops, {} ops/s, {} s", nops, nops/((after-before)/1e9d), (totalrtt/1e9d)/nops);
 
         int failedTrain = -1;
         boolean testTrains = true;
@@ -113,9 +116,9 @@ public class Tester {
         }
 
         if(testTrains)
-            logger.info("test PASSED: all trains arrived at destination");
+            System.out.println("Test PASSED: All trains arrived at destination!");
         else
-            logger.error("test FAILED: train " + failedTrain + " was stuck in segemento " + worker[failedTrain].getCurrentPostion() + " of linha " + worker[failedTrain].getLinha() + " was supposed to stop in segmento " + worker[failedTrain].getDestinarion());
+            System.out.println("Test FAILED: Train " + failedTrain + " was stuck in segment " + worker[failedTrain].getCurrentPostion() + " of linha " + worker[failedTrain].getLinha() + " was supposed to stop in segmento " + worker[failedTrain].getDestinarion());
 
     }
 
@@ -138,7 +141,7 @@ public class Tester {
     }
 
     private synchronized void log(long delta) {
-        System.out.println("Stage = " + stage);
+        //System.out.println("Stage = " + stage);
         if (stage != Stage.Run)
             return;
 

@@ -167,6 +167,8 @@ De seguida, iniciam-se os servidores, com o comando \texttt{\$ ./run Servers}.
 
 Iniciados os servidores, o sistema pode ser testado com o comando \texttt{\$ ./run TrainsTest X} sendo X o número de composições que vão navegar o sistema durante o teste. Se este parâmetro não for fornecido, existirá apenas uma composição.
 
+No fim do teste, em caso de sucesso, será imprimada uma confirmação de que todas as composições chegaram com sucesso ao seu destino.
+
 \section{Navegação}
 
 \begin{itemize}
@@ -192,7 +194,7 @@ Caso contrário, o servidor aguarda até que se verifiquem e só aí responde ao cli
 
 Embora a solução implementada funcione como previsto na grande maioria dos casos, existe um problema que causa que por vezes, quando se utiliza um número de composições superior a 1, o teste bloqueie. O grupo não conseguiu resolver este problema nem encontrar a sua causa.
 
-Quando isto acontece, é necessário reiniciar os servidores.
+Quando isto acontece, é necessário reiniciar os servidores. A frequência deste problema varia de máquina para máquina e é bastante baixa.
 
 \chapter{Conclusões} \label{concl}
 

@@ -50,7 +50,7 @@ public class SocketServer<T> {
     }
     
     public void serve() throws IOException {
-        logger.info("server starting at port {}", port);
+        System.out.println("Server starting at port {"+port+"}");
         
         Worker worker = new Worker();
         
