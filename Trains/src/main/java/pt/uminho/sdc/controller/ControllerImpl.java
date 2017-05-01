@@ -1,4 +1,4 @@
-package pt.uminho.sdc.bank;
+package pt.uminho.sdc.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,8 +44,6 @@ public class ControllerImpl implements Controller {
         linha3.put("8",0);
         linha3.put("9",0);
         linha3.put("10",0);
-
-
     }
     
     @Override
@@ -53,45 +51,36 @@ public class ControllerImpl implements Controller {
         switch(linha){
             case 1:
                 if (segmento == (linha1.size() -1)) {
-                    System.out.println("TAMANHO LINHA = " + linha1.size() + " AND SEGMENTO = " + segmento + " RESULT = " + linha1.get(Integer.toString(segmento)));
                     if (checkAvailability(linha1, segmento)) {
-                        System.out.println("SETTING OCCUPIED SINGLE CHECK");
                         setOccupied(linha, segmento);
                         return true;
                     }
                 }
                 if(checkAvailability(linha1, segmento) && checkAvailability(linha1, segmento+1)){
-                    System.out.println("SETTING OCCUPIED DOUBLE CHECK");
                     setOccupied(linha, segmento);
                     return true;
                 }
                 break;
             case 2:
                 if (segmento == (linha2.size() -1)) {
-                    System.out.println("TAMANHO LINHA = " + linha2.size() + " AND SEGMENTO = " + segmento + " RESULT = " + linha2.get(Integer.toString(segmento)));
                     if (checkAvailability(linha2, segmento)) {
-                        System.out.println("SETTING OCCUPIED SINGLE CHECK");
                         setOccupied(linha, segmento);
                         return true;
                     }
                 }
                 if(checkAvailability(linha2, segmento) && checkAvailability(linha2, segmento+1)){
-                    System.out.println("SETTING OCCUPIED DOUBLE CHECK");
                     setOccupied(linha, segmento);
                     return true;
                 }
                 break;
             case 3:
                 if (segmento == (linha3.size() - 1)) {
-                    System.out.println("TAMANHO LINHA = " + linha3.size() + " AND SEGMENTO = " + segmento + " RESULT = " + linha3.get(Integer.toString(segmento)));
                     if (checkAvailability(linha3, segmento)) {
-                        System.out.println("SETTING OCCUPIED SINGLE CHECK");
                         setOccupied(linha, segmento);
                         return true;
                     }
                 }
                 if(checkAvailability(linha3, segmento) && checkAvailability(linha3, segmento+1)){
-                    System.out.println("SETTING OCCUPIED DOUBLE CHECK");
                     setOccupied(linha, segmento);
                     return true;
                 }
@@ -101,8 +90,6 @@ public class ControllerImpl implements Controller {
     }
     
     public synchronized boolean checkAvailability(Map<String, Integer> linha, int segmento){
-        //if(segmento <= linha.size())
-        //System.out.println("TAMANHO LINHA = " + linha.size() + " AND SEGMENTO = " + segmento + " RESULT = " + linha.get(Integer.toString(segmento)));
         if(linha.get(Integer.toString(segmento)) == 0)
             return true;
         return false;
@@ -156,32 +143,5 @@ public class ControllerImpl implements Controller {
                 break;
             }
             return false;
-    }
-     
-     
-    
-    
-    int balance = 0;
-
-
-    @Override
-    public synchronized boolean operation(int value) {
-        if (value < 0 && value+balance < 0) {
-            logger.trace("operation = {} failed", value);
-            return false;
-        }
-        balance += value;
-        logger.trace("operation = {} done, balance = {}", value, balance);
-        return true;
-    }
-
-    @Override
-    public synchronized int getBalance() {
-        logger.trace("balance = {}", balance);
-        return balance;
-    }
-
-    public synchronized String toString() {
-        return "bank balance = "+balance;
     }
 }

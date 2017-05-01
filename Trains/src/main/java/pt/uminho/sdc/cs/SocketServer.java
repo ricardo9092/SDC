@@ -5,19 +5,9 @@ import org.slf4j.LoggerFactory;
 
 import spread.*;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.EOFException;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.io.InterruptedIOException;
-import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 
 public class SocketServer<T> {
 
@@ -37,7 +27,7 @@ public class SocketServer<T> {
 
     
     public SocketServer(int port, T state, String serverName) throws IOException, SpreadException {
-    	
+
     	this.port = port;
     	
         this.serverName = serverName;
@@ -79,16 +69,14 @@ public class SocketServer<T> {
 					receivedMessage = connection.receive();
 					g = receivedMessage.getSender();
                     Request<T, ?> req = (Request<T,?>) receivedMessage.getObject();
-                    System.out.println("Request Received = " + receivedMessage.getObject() + " Mark = " + req.getMessageMark() + " on Server = " + serverName);
+                    //System.out.println("Request Received = " + receivedMessage.getObject() + " Mark = " + req.getMessageMark() + " on Server = " + serverName);
 
                     Thread t = new Thread(new MessageTreater(g, req));
                     t.start();
 
 				} catch (InterruptedIOException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				} catch (SpreadException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
             } 
@@ -110,8 +98,6 @@ public class SocketServer<T> {
                 try {
                     rep = new ValueReply<>(req.apply(state));
                     rep.setMessageMark(req.getMessageMark());
-                    if(rep != null)
-                        System.out.println("REP STRING = " + rep.toString());
                 } catch(RemoteInvocationException e) {
                     rep = new ErrorReply(e);
                 } catch (Exception e) {
@@ -126,7 +112,6 @@ public class SocketServer<T> {
                 connection.multicast(sendMessage);
 
             } catch (SpreadException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }

@@ -1,4 +1,4 @@
-package pt.uminho.sdc.bank;
+package pt.uminho.sdc.controller;
 
 import pt.uminho.sdc.cs.Client;
 import pt.uminho.sdc.cs.RemoteInvocationException;
@@ -10,17 +10,6 @@ public class ControllerClient implements Controller {
 
     public ControllerClient(Client<Controller> client) {
         this.client = client;
-    }
-
-    @Override
-    public boolean operation(int value) throws RemoteInvocationException, SpreadException, InterruptedException {
-        client.request(new ReqOperation(value));
-        return client.request(new ReqOperation(value));
-    }
-
-    @Override
-    public int getBalance() throws RemoteInvocationException, SpreadException, InterruptedException {
-        return client.request(new ReqBalance());
     }
     
     @Override

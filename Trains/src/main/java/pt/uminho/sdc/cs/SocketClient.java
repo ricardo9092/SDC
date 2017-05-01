@@ -38,7 +38,6 @@ public class SocketClient<T> implements Client<T> {
 			connection.connect(InetAddress.getByName("localhost") , port, clientName, false, false);
             group.join(connection,clientName);
 		} catch (SpreadException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -53,7 +52,7 @@ public class SocketClient<T> implements Client<T> {
         sendMessage = new SpreadMessage();
         sendMessage.addGroup("groupServer");
         sendMessage.setReliable();
-        System.out.println("The REQ is = " + req);
+        //System.out.println("The REQ is = " + req);
         req.setMessageMark(currentMark);
         sendMessage.setObject(req);
 
@@ -76,7 +75,7 @@ public class SocketClient<T> implements Client<T> {
             e.printStackTrace();
         }
 
-        System.out.println("Received Message Mark = " + r.getMessageMark() + " Current Mark = " + currentMark);
+        //System.out.println("Received Message Mark = " + r.getMessageMark() + " Current Mark = " + currentMark);
         if (!(r.getMessageMark() < currentMark))
             setReply(r);
 

@@ -1,4 +1,4 @@
-package pt.uminho.sdc.bank;
+package pt.uminho.sdc.controller;
 
 import pt.uminho.sdc.cs.Request;
 import spread.SpreadException;

@@ -1,4 +1,4 @@
-package pt.uminho.sdc.bank;
+package pt.uminho.sdc.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +9,7 @@ import java.util.Random;
 public class Tester {
     private static Logger logger = LoggerFactory.getLogger(Tester.class);
 
-    private final BankSupplier supplier;
+    private final ContollerSupplier supplier;
     private final long time;
     private final Random random;
     private Worker[] worker;
@@ -17,41 +17,42 @@ public class Tester {
     private int nops;
     private long totalrtt;
     private int totalop;
+    private int[] trainsTerminated;
 
     @FunctionalInterface
-    public interface BankSupplier {
+    public interface ContollerSupplier {
         Controller get() throws Exception;
     }
 
-    public Tester(BankSupplier supplier, int nthr, long seconds) {
+    public Tester(ContollerSupplier supplier, int nthr, long seconds) {
         this.worker = new Worker[nthr];
+        this.trainsTerminated = new int[nthr];
         this.supplier = supplier;
         this.time = seconds*1000;
         this.random = new Random();
-        logger.info("testing bank implementation: threads = {}, seconds = {}", nthr, seconds);
+        logger.info("testing controller implementation: threads = {}, seconds = {}", nthr, seconds);
     }
 
-    public Tester(BankSupplier supplier, String[] args) {
+    public Tester(ContollerSupplier supplier, String[] args) {
         int nthr = 1;
         if (args.length >= 1)
             nthr = Integer.parseInt(args[0]);
         this.worker = new Worker[nthr];
+        this.trainsTerminated = new int[nthr];
         this.supplier = supplier;
         int seconds = 10;
         if (args.length >= 2)
             seconds = Integer.parseInt(args[1]);
         this.time = seconds*1000;
         this.random = new Random();
-        logger.info("testing bank implementation: threads = {}, seconds = {}", nthr, seconds);
+        logger.info("testing controller implementation: threads = {}, seconds = {}", nthr, seconds);
     }
 
     public void test() throws InterruptedException, SpreadException {
         int initial;
 
-        Controller bank;
-
         try {
-            logger.debug("connected to bank");
+            logger.debug("connected to controller");
             initial = 0 ;
         } catch(Exception e) {
             logger.error("cannot get initial balance: test aborted", e);
@@ -62,7 +63,8 @@ public class Tester {
             int linha = generateRandomLinha();
             int entryPoint = generateRandomStartPoint(linha);
             int leavePoint = generateRandomEndPoint(linha, entryPoint);
-            worker[i] = new Worker(linha, entryPoint, leavePoint);
+            trainsTerminated[i] = 0;
+            worker[i] = new Worker(linha, entryPoint, leavePoint, i);
         }
         for(int i=0; i<worker.length; i++) {
             worker[i].start();
@@ -88,8 +90,10 @@ public class Tester {
 
         logger.info("complete: shutting down");
 
-        for(int i=0; i<worker.length; i++)
+
+        for(int i=0; i<worker.length; i++) {
             worker[i].join();
+        }
 
         if (stage != Stage.Shutdown) {
             logger.error("test aborted");
@@ -98,12 +102,21 @@ public class Tester {
 
         logger.info("performance: {} ops, {} ops/s, {} s", nops, nops/((after-before)/1e9d), (totalrtt/1e9d)/nops);
 
-        int result = 0;
+        int failedTrain = -1;
+        boolean testTrains = true;
 
-        if (initial+totalop == result)
-            logger.info("test PASSED: final balance matches operations");
+        for(int i=0; i<worker.length; i++) {
+            if(!worker[i].arrivedAtDestination()){
+                testTrains = false;
+                failedTrain = i;
+            }
+        }
+
+        if(testTrains)
+            logger.info("test PASSED: all trains arrived at destination");
         else
-            logger.error("test FAILED: final balance does not match operations");
+            logger.error("test FAILED: train " + failedTrain + " was stuck in segemento " + worker[failedTrain].getCurrentPostion() + " of linha " + worker[failedTrain].getLinha() + " was supposed to stop in segmento " + worker[failedTrain].getDestinarion());
+
     }
 
     private static enum Stage { Warmup, Run, Shutdown, Error };
@@ -124,9 +137,8 @@ public class Tester {
         return this.stage == stage;
     }
 
-    private synchronized void log(long delta, int op) {
-        totalop+=op;
-
+    private synchronized void log(long delta) {
+        System.out.println("Stage = " + stage);
         if (stage != Stage.Run)
             return;
 
@@ -135,7 +147,6 @@ public class Tester {
     }
 
     private synchronized boolean isRunning() {
-        System.out.println(stage.compareTo(Stage.Run) <= 0);
         return stage.compareTo(Stage.Run) <= 0;
     }
 
@@ -146,7 +157,7 @@ public class Tester {
         private int currentPostion;
         private boolean entered;
 
-        public Worker(int linha, int entryPoint, int leavePoint){
+        public Worker(int linha, int entryPoint, int leavePoint, int trainPosition){
             this.linha = linha;
             this.entryPoint = entryPoint;
             this.leavePoint = leavePoint;
@@ -154,25 +165,48 @@ public class Tester {
             this.entered = false;
         }
 
+        public boolean arrivedAtDestination(){
+            if(currentPostion == leavePoint){
+                return true;
+            }
+            return false;
+        }
+
+        public int getDestinarion(){
+            return leavePoint;
+        }
+
+        public int getCurrentPostion(){
+            return currentPostion;
+        }
+        public int getLinha(){
+            return linha;
+        }
+
         public void run() {
             try {
-                Controller bank = supplier.get();
+                Controller controller = supplier.get();
 
-                logger.debug("worker connected to bank");
+                logger.debug("worker connected to controller");
                 while (currentPostion < leavePoint) {
+                    long before = System.nanoTime();
                     if (entered) {
-                        bank.requestEntry(linha, currentPostion + 1);
+                        controller.requestEntry(linha, currentPostion + 1);
                         //bank.setOccupied(linha, currentPostion + 1);
-                        bank.setAvailable(linha, currentPostion);
+                        controller.setAvailable(linha, currentPostion);
                         currentPostion = currentPostion + 1;
+                        long after = System.nanoTime();
+                        log(after - before);
                     } else {
-                        bank.requestEntry(linha, entryPoint);
+                        controller.requestEntry(linha, entryPoint);
                         //bank.setOccupied(linha, currentPostion);
                         entered = true;
+                        long after = System.nanoTime();
+                        log(after - before);
                     }
                 }
-                //***** Free the last station in case other trains want to come to this segment **** ////
-                bank.setAvailable(linha,currentPostion);
+                //***** Free the last station in case other trains want to come to this segment **** //
+                controller.setAvailable(linha,currentPostion);
             } catch(Exception e) {
                 logger.error("worker stopping on exception", e);
                 setStage(Stage.Error);
@@ -183,7 +217,6 @@ public class Tester {
 
     public int generateRandomLinha(){
         int linha = random.nextInt(3)+1;
-        System.out.println("Linha = " + linha);
         return linha;
     }
 
@@ -203,7 +236,6 @@ public class Tester {
                     StartPoint = random.nextInt(11);
                 break;
         }
-        System.out.println("Start Point = " + StartPoint);
         return StartPoint;
     }
 
@@ -223,7 +255,6 @@ public class Tester {
                     EndPoint = random.nextInt(11);
                 break;
         }
-        System.out.println("End Point = " + EndPoint);
         return EndPoint;
     }
 }
