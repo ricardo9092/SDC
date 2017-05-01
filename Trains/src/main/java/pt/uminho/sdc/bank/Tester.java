@@ -2,14 +2,12 @@ package pt.uminho.sdc.bank;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pt.uminho.sdc.cs.RemoteInvocationException;
 import spread.SpreadException;
 
-import java.io.IOException;
 import java.util.Random;
 
-public class BankTester {
-    private static Logger logger = LoggerFactory.getLogger(BankTester.class);
+public class Tester {
+    private static Logger logger = LoggerFactory.getLogger(Tester.class);
 
     private final BankSupplier supplier;
     private final long time;
@@ -22,10 +20,10 @@ public class BankTester {
 
     @FunctionalInterface
     public interface BankSupplier {
-        Bank get() throws Exception;
+        Controller get() throws Exception;
     }
 
-    public BankTester(BankSupplier supplier, int nthr, long seconds) {
+    public Tester(BankSupplier supplier, int nthr, long seconds) {
         this.worker = new Worker[nthr];
         this.supplier = supplier;
         this.time = seconds*1000;
@@ -33,7 +31,7 @@ public class BankTester {
         logger.info("testing bank implementation: threads = {}, seconds = {}", nthr, seconds);
     }
 
-    public BankTester(BankSupplier supplier, String[] args) {
+    public Tester(BankSupplier supplier, String[] args) {
         int nthr = 1;
         if (args.length >= 1)
             nthr = Integer.parseInt(args[0]);
@@ -50,7 +48,7 @@ public class BankTester {
     public void test() throws InterruptedException, SpreadException {
         int initial;
 
-        Bank bank;
+        Controller bank;
 
         try {
             //bank = supplier.get();
@@ -167,7 +165,7 @@ public class BankTester {
 
         public void run() {
             try {
-                Bank bank = supplier.get();
+                Controller bank = supplier.get();
 
                 logger.debug("worker connected to bank");
                 //synchronized(System.out) {
