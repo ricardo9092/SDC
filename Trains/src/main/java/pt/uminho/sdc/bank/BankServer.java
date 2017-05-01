@@ -16,7 +16,7 @@ public class BankServer {
                 }
             }
         }.start();
-        /*new Thread(){
+        new Thread(){
             public void run(){
                 try{
                     new SocketServer<>(4803, new BankImpl(), "srv2").serve();
@@ -24,6 +24,6 @@ public class BankServer {
                     e.printStackTrace();
                 }
             }
-        }.start();*/
+        }.start();
     }
 }

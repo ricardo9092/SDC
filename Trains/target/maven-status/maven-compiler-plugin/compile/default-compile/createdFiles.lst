@@ -3,6 +3,7 @@ pt/uminho/sdc/bank/BankClient.class
 pt/uminho/sdc/cs/SocketClient.class
 pt/uminho/sdc/cs/Message.class
 pt/uminho/sdc/bank/BankBalanceRequest.class
+pt/uminho/sdc/bank/BankServer$2.class
 pt/uminho/sdc/cs/SocketServer.class
 pt/uminho/sdc/cs/SocketServer$MessageTreater.class
 pt/uminho/sdc/bank/Bank.class

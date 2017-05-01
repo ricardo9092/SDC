@@ -52,34 +52,46 @@ public class BankImpl implements Bank {
     public synchronized boolean requestEntry(int linha, int segmento){
         switch(linha){
             case 1:
-                if (segmento == linha1.size() -1)
-                    if(checkAvailability(linha1, segmento)){
+                if (segmento == (linha1.size() -1)) {
+                    System.out.println("TAMANHO LINHA = " + linha1.size() + " AND SEGMENTO = " + segmento + " RESULT = " + linha1.get(Integer.toString(segmento)));
+                    if (checkAvailability(linha1, segmento)) {
+                        System.out.println("SETTING OCCUPIED SINGLE CHECK");
                         setOccupied(linha, segmento);
                         return true;
                     }
+                }
                 if(checkAvailability(linha1, segmento) && checkAvailability(linha1, segmento+1)){
+                    System.out.println("SETTING OCCUPIED DOUBLE CHECK");
                     setOccupied(linha, segmento);
                     return true;
                 }
                 break;
             case 2:
-                if (segmento == linha2.size() -1)
-                    if(checkAvailability(linha2, segmento)){
+                if (segmento == (linha2.size() -1)) {
+                    System.out.println("TAMANHO LINHA = " + linha2.size() + " AND SEGMENTO = " + segmento + " RESULT = " + linha2.get(Integer.toString(segmento)));
+                    if (checkAvailability(linha2, segmento)) {
+                        System.out.println("SETTING OCCUPIED SINGLE CHECK");
                         setOccupied(linha, segmento);
                         return true;
                     }
+                }
                 if(checkAvailability(linha2, segmento) && checkAvailability(linha2, segmento+1)){
+                    System.out.println("SETTING OCCUPIED DOUBLE CHECK");
                     setOccupied(linha, segmento);
                     return true;
                 }
                 break;
             case 3:
-                if (segmento == linha3.size() -1)
-                    if(checkAvailability(linha3, segmento)){
+                if (segmento == (linha3.size() - 1)) {
+                    System.out.println("TAMANHO LINHA = " + linha3.size() + " AND SEGMENTO = " + segmento + " RESULT = " + linha3.get(Integer.toString(segmento)));
+                    if (checkAvailability(linha3, segmento)) {
+                        System.out.println("SETTING OCCUPIED SINGLE CHECK");
                         setOccupied(linha, segmento);
                         return true;
                     }
+                }
                 if(checkAvailability(linha3, segmento) && checkAvailability(linha3, segmento+1)){
+                    System.out.println("SETTING OCCUPIED DOUBLE CHECK");
                     setOccupied(linha, segmento);
                     return true;
                 }
@@ -90,7 +102,7 @@ public class BankImpl implements Bank {
     
     public synchronized boolean checkAvailability(Map<String, Integer> linha, int segmento){
         //if(segmento <= linha.size())
-        System.out.println("TAMANHO LINHA = " + linha.size() + " AND SEGMENTO = " + segmento + " RESULT = " + linha.get(Integer.toString(segmento)));
+        //System.out.println("TAMANHO LINHA = " + linha.size() + " AND SEGMENTO = " + segmento + " RESULT = " + linha.get(Integer.toString(segmento)));
         if(linha.get(Integer.toString(segmento)) == 0)
             return true;
         return false;

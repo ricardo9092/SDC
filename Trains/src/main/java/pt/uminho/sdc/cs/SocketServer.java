@@ -78,10 +78,9 @@ public class SocketServer<T> {
                 SpreadGroup g = null;
                 try {
 					receivedMessage = connection.receive();
-					System.out.println("Received Something");
 					g = receivedMessage.getSender();
                     Request<T, ?> req = (Request<T,?>) receivedMessage.getObject();
-                    System.out.println("Request Received = " + receivedMessage.getObject() + " Mark = " + req.getMessageMark());
+                    System.out.println("Request Received = " + receivedMessage.getObject() + " Mark = " + req.getMessageMark() + " on Server = " + serverName);
 
 
                     Thread t = new Thread(new MessageTreater(g, req));

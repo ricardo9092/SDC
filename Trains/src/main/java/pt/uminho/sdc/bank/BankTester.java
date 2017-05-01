@@ -188,6 +188,7 @@ public class BankTester {
                     }
                     //***** Free the last station in case other trains want to come to this segment **** ////
                     bank.setAvailable(linha,currentPostion);
+                    System.out.println("FREEEEEEEEE LINHA  = " + linha + " POSITION = " + currentPostion);
                 //}
             } catch(Exception e) {
                 logger.error("worker stopping on exception", e);

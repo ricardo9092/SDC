@@ -50,8 +50,7 @@ public class SocketClient<T> implements Client<T> {
     }
     
     
-    public synchronized <V> V request(Request<T,V> req) throws RemoteInvocationException, SpreadException, InterruptedException {
-        //if (messageMark > currentMark){
+ /*   public synchronized <V> V request(Request<T,V> req) throws RemoteInvocationException, SpreadException, InterruptedException {
         currentMark = messageMark;
         boolean completed = false;
         sendMessage = new SpreadMessage();
@@ -61,11 +60,9 @@ public class SocketClient<T> implements Client<T> {
         req.setMessageMark(messageMark);
         messageMark = messageMark + 1;
         sendMessage.setObject(req);
-        System.out.println("Before Sending Message");
 
         logger.info("The connection is = " + connection.isConnected());
         connection.multicast(sendMessage);
-        System.out.println("After Sending Message");
 
         //logger.info("message multicast");
 
@@ -85,20 +82,13 @@ public class SocketClient<T> implements Client<T> {
         }
 
         try {
-            //receivedMessage = theMessageList.get(0);
-            //System.out.println("Client Received = " + receivedMessage.getObject());
             r = (Reply) receivedMessage.getObject();
-            //System.out.println("The reply is after = " + r);
         } catch (SpreadException e) {
             e.printStackTrace();
         }
 
-        //System.out.println("Received Message Mark = " + r.getMessageMark() + " current Mark = " + currentMark + " and completed = " + completed);
-        //if (r.getMessageMark() == currentMark && completed == false) {
-            System.out.println("Received Message Mark = " + r.getMessageMark() + " Current Mark = " + currentMark);
-            setReply(r);
-            completed = true;
-        //}
+        System.out.println("Received Message Mark = " + r.getMessageMark() + " Current Mark = " + currentMark);
+        setReply(r);
 
         while (rep == null) {
             wait();
@@ -106,16 +96,77 @@ public class SocketClient<T> implements Client<T> {
 
 
         if (rep instanceof ValueReply) {
-            //System.out.println(((ValueReply) rep).getValue());
             return ((ValueReply<V>) rep).getValue();
         } else {
             throw ((ErrorReply) rep).getException();
         }
-    //}
-    //return null;
     }
 
+*/
+
+
+    public synchronized <V> V request(Request<T,V> req) throws RemoteInvocationException, SpreadException, InterruptedException {
+        int currentMark = messageMark;
+        messageMark = messageMark + 1;
+        boolean completed = false;
+        sendMessage = new SpreadMessage();
+        sendMessage.addGroup("groupServer");
+        sendMessage.setReliable();
+        System.out.println("The REQ is = " + req);
+        req.setMessageMark(currentMark);
+        sendMessage.setObject(req);
+
+        logger.info("The connection is = " + connection.isConnected());
+        connection.multicast(sendMessage);
+
+        //logger.info("message multicast");
+
+        //new Thread() {
+            Reply r = null;
+            SpreadMessage receivedMessage = new SpreadMessage();
+
+            //public void run() {
+                //logger.info("thread running");
+                //while(true){
+                    try {
+                        receivedMessage = connection.receive();
+                        System.out.println("Received From Server");
+                        //logger.info("message received");
+                    } catch (InterruptedIOException e) {
+                        e.printStackTrace();
+                    } catch (SpreadException e) {
+                        //logger.info("exception");
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        r = (Reply) receivedMessage.getObject();
+                    } catch (SpreadException e) {
+                        e.printStackTrace();
+                    }
+
+                    System.out.println("Received Message Mark = " + r.getMessageMark() + " Current Mark = " + currentMark);
+                    if (!(r.getMessageMark() < currentMark))
+                        setReply(r);
+                //}
+            //}
+        //}.start();
+
+        while (rep == null) {
+            wait();
+        }
+
+
+        if (rep instanceof ValueReply) {
+            return ((ValueReply<V>) rep).getValue();
+        } else {
+            throw ((ErrorReply) rep).getException();
+        }
+    }
+
+
     public synchronized void setReply(Reply r){
+            System.out.println("Setting the Reply for Mark = " + r.getMessageMark());
             rep = r;
             notifyAll();
     }
