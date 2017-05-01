@@ -125,6 +125,10 @@ Este tipo de replicação tem a vantagem de ser transparente para o cliente e reso
 
 \chapter{Implementação e Funcionamento}
 
+\section{Ponto de Partida}
+
+Como ponto de partida para a implementação do sistema pedido, utilizou-se o código resultante das primeiras aulas práticas da Unidade Curricular, onde se utilizam protocolos de multicasting e replicação no contexto de um sistema de gestão de contas bancárias tolerante a faltas.
+
 \section{Troca de Mensagens}
 
 A comunicação entre as composições e o sistema de controlo tráfego é feita utilizando o protocolo de comunicação em grupo Spread. 
@@ -153,21 +157,42 @@ Cada segmento tem a ele associado um valor binário que indica se está, em dado m
 
 \pagebreak
 
-\section{Navegação}
+\section{Teste e Navegação}
 
-Iniciados os servidores, o sistema pode ser testado com o comando \texttt{./run TestRemote --X--}, sendo X o número de composições que vão navegar o sistema durante o teste.
+\subsection{Execução}
+
+Para executar o teste, deve-se começar por compilar o código na diretoria do projeto, com o comando \texttt{\$ mvn clean compile}.
+
+De seguida, iniciam-se os servidores, com o comando \texttt{\$ ./run Servers}.
+
+Iniciados os servidores, o sistema pode ser testado com o comando \texttt{\$ ./run TrainsTest X} sendo X o número de composições que vão navegar o sistema durante o teste. Se este parâmetro não for fornecido, existirá apenas uma composição.
+
+\section{Navegação}
 
 \begin{itemize}
 \item{Cada composição escolhe aleatoriamente uma linha, um segmento de entrada e um segmento de saída. Durante a simulação, esta vai navegar a linha no sentido crescente entre estes dois pontos. Por exemplo, Linha 1 - Segmento 1 - Segmento 6.}
 \item{Para cada segmento do caminho a navegar, incluindo o de entrada, a composição envia ao servidor um pedido de entrada (Entry Request). O servidor responderá com a autorização para entrar quando e só se houver condições para tal. Aquando da receção da resposta, a composição avança para esse segmento.}
-\item{}
-\item{}
+\item{É enviada uma notificação para sinalizar que a composição está a entrar no segmento.}
+\item{Quando uma composição sai de um segmento que navegou, esta envia uma notificação ao servidor para que o estado do segmento em questão possa ser atualizado.}
 \item{Neste ponto, o servidor já atualizou o seu estado, refletindo a ocupação ou não dos segmentos envolvidos na operação.}
 \item{O processo repete-se até que todas as composições terminem a sua viagem.}
 \end{itemize}
 
 \subsection{Entry Request}
 
+Cada vez que é feito um Entry Request, isto é, que uma composição pede autorização para entrar num determinado segmento, o sistema faz a verificação de disponibilidade desse segmento.
+
+Para uma composição obter permissão de entrada é necessário que tanto o segmento em questão como o segmento seguinte estejam disponíveis. Por exemplo, se uma composição quiser entrar no segmento 3, é necessário que os segmentos 4 e 5 estejam livres.
+
+Se estas condições se verificarem, o servidor responde ao cliente que fez o pedido com a devida permissão.
+
+Caso contrário, o servidor aguarda até que se verifiquem e só aí responde ao cliente. Assim, não existem respostas negativas a este pedido. As composições devem esperar até receberem uma resposta para avançar para o segmento.
+
+\section{Desafios na implementação}
+
+Embora a solução implementada funcione como previsto na grande maioria dos casos, existe um problema que causa que por vezes, quando se utiliza um número de composições superior a 1, o teste bloqueie. O grupo não conseguiu resolver este problema nem encontrar a sua causa.
+
+Quando isto acontece, é necessário reiniciar os servidores.
 
 \chapter{Conclusões} \label{concl}
 
@@ -177,7 +202,7 @@ Foram atingidos os requisitos mínimos do trabalho, tendo sido desenvolvido um pa
 
 Ficam no entanto abertas vias para evolução, como a obtenção de medidas de desempenho e a realização de testes em multiplas máquinas com simulação de falhas.
 
-Para além disso, ????
+Para além disso, foram encontradas algumas dificuldades na implementação do sistema, nomeadamente relativamente à operação concorrente de várias composições e servidores.
 
 \bibliographystyle{alpha}
 \bibliography{../Bibs/lp,prh}
