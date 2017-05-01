@@ -51,10 +51,8 @@ public class Tester {
         Controller bank;
 
         try {
-            //bank = supplier.get();
             logger.debug("connected to bank");
             initial = 0 ;
-            //initial = bank.getBalance();
         } catch(Exception e) {
             logger.error("cannot get initial balance: test aborted", e);
             return;
@@ -68,7 +66,6 @@ public class Tester {
         }
         for(int i=0; i<worker.length; i++) {
             worker[i].start();
-            //Thread.sleep(1000);
         }
 
         if (!waitInStage(Stage.Warmup, time/10)) {
@@ -102,12 +99,6 @@ public class Tester {
         logger.info("performance: {} ops, {} ops/s, {} s", nops, nops/((after-before)/1e9d), (totalrtt/1e9d)/nops);
 
         int result = 0;
-        /*try {
-            result = bank.getBalance();
-        } catch(RemoteInvocationException e) {
-            logger.error("cannot get final balance: test aborted", e);
-            return;
-        }*/
 
         if (initial+totalop == result)
             logger.info("test PASSED: final balance matches operations");
@@ -168,26 +159,20 @@ public class Tester {
                 Controller bank = supplier.get();
 
                 logger.debug("worker connected to bank");
-                //synchronized(System.out) {
-                    //System.out.println("TESTG");
-                    while (currentPostion < leavePoint) {
-                        if (entered) {
-                            //System.out.println("THERE");
-                            bank.requestEntry(linha, currentPostion + 1);
-                            //bank.setOccupied(linha, currentPostion + 1);
-                            bank.setAvailable(linha, currentPostion);
-                            currentPostion = currentPostion + 1;
-                        } else {
-                            //System.out.println("HERE");
-                            bank.requestEntry(linha, entryPoint);
-                            //bank.setOccupied(linha, currentPostion);
-                            entered = true;
-                        }
+                while (currentPostion < leavePoint) {
+                    if (entered) {
+                        bank.requestEntry(linha, currentPostion + 1);
+                        //bank.setOccupied(linha, currentPostion + 1);
+                        bank.setAvailable(linha, currentPostion);
+                        currentPostion = currentPostion + 1;
+                    } else {
+                        bank.requestEntry(linha, entryPoint);
+                        //bank.setOccupied(linha, currentPostion);
+                        entered = true;
                     }
-                    //***** Free the last station in case other trains want to come to this segment **** ////
-                    bank.setAvailable(linha,currentPostion);
-                    System.out.println("FREEEEEEEEE LINHA  = " + linha + " POSITION = " + currentPostion);
-                //}
+                }
+                //***** Free the last station in case other trains want to come to this segment **** ////
+                bank.setAvailable(linha,currentPostion);
             } catch(Exception e) {
                 logger.error("worker stopping on exception", e);
                 setStage(Stage.Error);

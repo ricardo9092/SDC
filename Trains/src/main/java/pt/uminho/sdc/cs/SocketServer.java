@@ -73,7 +73,6 @@ public class SocketServer<T> {
         
         public void run(){
             while (true) {
-                System.out.println("WHILE");
             	Reply rep = null;
                 SpreadGroup g = null;
                 try {
@@ -82,61 +81,9 @@ public class SocketServer<T> {
                     Request<T, ?> req = (Request<T,?>) receivedMessage.getObject();
                     System.out.println("Request Received = " + receivedMessage.getObject() + " Mark = " + req.getMessageMark() + " on Server = " + serverName);
 
-
                     Thread t = new Thread(new MessageTreater(g, req));
                     t.start();
-                    //Reply rep = null;
-                   /* new Thread(g){
-                        Reply rep = null;
-                        SpreadGroup g = null;
-                        SpreadMessage sendMessage = new SpreadMessage();
-                        public void run(){
-                            while(rep == null || rep.toString().substring(7).equals("false")){
 
-                                try {
-                                    rep = new ValueReply<>(req.apply(state));
-                                    rep.setMessageMark(req.getMessageMark());
-                                    if(rep != null)
-                                        System.out.println("REP STRING = " + rep.toString());
-                                    //logger.trace("current state: {}", state);
-                                } catch(RemoteInvocationException e) {
-                                    rep = new ErrorReply(e);
-                                } catch (Exception e) {
-                                    //logger.warn("unexpected application exception", e);
-                                    rep = new ErrorReply(new ServerSideException(e));
-                                }
-                            }
-
-                            try {
-                                System.out.println("BEFORE SENDING THE MESSAGE");
-                                sendMessage.setObject(rep);
-                                sendMessage.addGroup(g);
-                                sendMessage.setReliable();
-                                connection.multicast(sendMessage);
-                                System.out.println("AFTER SENDING THE MESSAGE");
-
-                            } catch (SpreadException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
-                        }
-                    }.init(g).start();*/
-
-                    /*while(rep == null || rep.toString().substring(7).equals("false")){
-
-                        try {
-                            rep = new ValueReply<>(req.apply(state));
-                            rep.setMessageMark(req.getMessageMark());
-                            if(rep != null)
-                                System.out.println("REP STRING = " + rep.toString());
-                            //logger.trace("current state: {}", state);
-                        } catch(RemoteInvocationException e) {
-                            rep = new ErrorReply(e);
-                        } catch (Exception e) {
-                            //logger.warn("unexpected application exception", e);
-                            rep = new ErrorReply(new ServerSideException(e));
-                        }
-                    }*/
 				} catch (InterruptedIOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -144,61 +91,6 @@ public class SocketServer<T> {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-
-				/*
-                try {
-                    System.out.println("BEFORE SENDING THE MESSAGE");
-                    sendMessage.setObject(rep);
-	                sendMessage.addGroup(g);
-	                sendMessage.setReliable();
-					connection.multicast(sendMessage);
-                    System.out.println("AFTER SENDING THE MESSAGE");
-
-				} catch (SpreadException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} */
-
-               System.out.println("Should Stay in WHILE");
-                
-			/*	Request<T, ?> req = null;
-
-				try {
-					System.out.println("Received Request = " + receivedMessage.getObject());
-					req = (Request<T,?>) receivedMessage.getObject();
-				} catch (SpreadException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				
-                logger.debug("received request: {}", req);
-                Reply rep = null;
-                try {
-                    rep = new ValueReply<>(req.apply(state));
-                    logger.trace("current state: {}", state);
-                } catch(RemoteInvocationException e) {
-                    rep = new ErrorReply(e);
-                } catch (Exception e) {
-                    logger.warn("unexpected application exception", e);
-                    rep = new ErrorReply(new ServerSideException(e));
-                }
-                logger.debug("sending reply: {}", rep);
-                
-                try {
-					sendMessage.setObject(rep);
-				} catch (SpreadException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-                sendMessage.addGroup("group");
-                sendMessage.setReliable();
-                
-                try {
-					connection.multicast(sendMessage);
-				} catch (SpreadException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}*/
             } 
         }
     }
@@ -220,22 +112,18 @@ public class SocketServer<T> {
                     rep.setMessageMark(req.getMessageMark());
                     if(rep != null)
                         System.out.println("REP STRING = " + rep.toString());
-                    //logger.trace("current state: {}", state);
                 } catch(RemoteInvocationException e) {
                     rep = new ErrorReply(e);
                 } catch (Exception e) {
-                    //logger.warn("unexpected application exception", e);
                     rep = new ErrorReply(new ServerSideException(e));
                 }
             }
 
             try {
-                System.out.println("BEFORE SENDING THE MESSAGE");
                 sendMessage.setObject(rep);
                 sendMessage.addGroup(g);
                 sendMessage.setReliable();
                 connection.multicast(sendMessage);
-                System.out.println("AFTER SENDING THE MESSAGE");
 
             } catch (SpreadException e) {
                 // TODO Auto-generated catch block
@@ -243,75 +131,4 @@ public class SocketServer<T> {
             }
         }
     }
-
-
-   /* public SocketServer(int port, T state) throws IOException {
-        this.ssocket = new ServerSocket(port);
-        this.port = ssocket.getLocalPort();
-        this.state = state;
-    }
-
-    public void serve() throws IOException {
-        logger.info("server starting at port {}", port);
-        try {
-            while (true)
-                new Worker(ssocket.accept()).start();
-        } finally {
-            logger.info("server at port {} stopped", port);
-        }
-    }
-
-    private class Worker extends Thread {
-        private final Socket socket;
-
-        public Worker(Socket socket) {
-            this.socket = socket;
-        }
-
-        public void run() {
-            try {
-                logger.info("client connected: {}", socket);
-
-                ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-                oos.flush();
-                ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
-
-                while (true) {
-                    Request<T,?> req = (Request<T,?>) ois.readObject();
-                    logger.debug("received request: {}", req);
-                    Reply rep = null;
-                    try {
-                        rep = new ValueReply<>(req.apply(state));
-                        logger.trace("current state: {}", state);
-                    } catch(RemoteInvocationException e) {
-                        rep = new ErrorReply(e);
-                    } catch (Exception e) {
-                        logger.warn("unexpected application exception", e);
-                        rep = new ErrorReply(new ServerSideException(e));
-                    }
-                    logger.debug("sending reply: {}", rep);
-                    oos.writeObject(rep);
-                    oos.flush();
-                }
-
-            } catch(EOFException e) {
-                logger.info("client disconnected: {}", socket);
-            } catch (IOException | ClassNotFoundException e) {
-                logger.error("error reading request, closing connection", e);
-            }
-
-            try {
-                socket.close();
-            } catch (IOException e) {
-                logger.error("error closing connection", e);
-            }
-        }
-    }
-
-    public void close() throws IOException {
-        logger.info("closing server at port {}", port);
-        ssocket.close();
-    }
-    
-    */
 }
